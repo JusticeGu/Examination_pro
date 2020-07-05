@@ -73,7 +73,7 @@ public class LoginController implements Serializable {
         int status = userService.msgregister(user);
         switch (status) {
             case 0:
-                return new ResponseData(ExceptionMsg.FAILED,"用户名密码不可以为空");
+                return new ResponseData(ExceptionMsg.FAILED,"用户名密码不可以为空!");
             case 1:
                 return new ResponseData(ExceptionMsg.SUCCESS,user.getUsername());
             case 2:
