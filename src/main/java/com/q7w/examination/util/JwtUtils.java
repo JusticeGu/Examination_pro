@@ -19,11 +19,11 @@ import java.util.Map;
 public class JwtUtils {
 
     // 请求头
-    public static final String AUTH_HEADER = "Authorization";
+    public static final String AUTH_HEADER = "Q7WSecurity";
     // 私密
-    public static final String SECRET_KEY = "sercret";
-    // 过期时间1天
-    private static final long EXPIRE_TIME = 24 * 60 * 1000;
+    public static final String SECRET_KEY = "10$rw4dacU3dqeT.XAs0Hq";
+    // 过期时间1h
+    private static final long EXPIRE_TIME = 1 * 60 * 1000;
 
 
     /**
@@ -31,7 +31,7 @@ public class JwtUtils {
      */
     public static boolean verify(String token, String username, String secret) {
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
+            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
             JWTVerifier verifier = JWT.require(algorithm).withClaim("username", username).build();
             verifier.verify(token);
             return true;
@@ -47,7 +47,7 @@ public class JwtUtils {
     public static String sign(String username, String secret) {
         try {
             Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
-            Algorithm algorithm = Algorithm.HMAC256(secret);
+            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
             // 附带username信息
             return JWT.create().withClaim("username", username).withExpiresAt(date).sign(algorithm);
         } catch (JWTCreationException e) {
@@ -62,7 +62,7 @@ public class JwtUtils {
     public static String getUsername(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("id").asString();
+            return jwt.getClaim("username").asString();
         } catch (JWTDecodeException e) {
             return null;
         }
@@ -97,7 +97,7 @@ public class JwtUtils {
         Map<String, Claim> claims = jwt.getClaims();
         try {
             Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
-            Algorithm algorithm = Algorithm.HMAC256(secret);
+            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
             JWTCreator.Builder builer = JWT.create().withExpiresAt(date);
             for (Map.Entry<String, Claim> entry : claims.entrySet()) {
                 builer.withClaim(entry.getKey(), entry.getValue().asString());

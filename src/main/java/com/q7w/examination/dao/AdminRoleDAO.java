@@ -2,7 +2,7 @@ package com.q7w.examination.dao;
 
 
 
-import com.q7w.examination.entity.AdminRole;
+import com.q7w.examination.entity.Uesr.AdminRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

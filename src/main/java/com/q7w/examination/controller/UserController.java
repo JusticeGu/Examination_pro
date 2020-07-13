@@ -7,7 +7,13 @@ import com.q7w.examination.dao.UserDAO;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
 import com.q7w.examination.util.Pbkdf2Sha256;
+import com.q7w.examination.util.ValidUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -24,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-
+@Api(tags = "用户管理相关接口")
 public class UserController implements Serializable {
     private static final long serialVersionUID = 3033545151355633240L;
     @Autowired
@@ -33,6 +39,7 @@ public class UserController implements Serializable {
     AdminRoleService adminRoleService;
     @Autowired
     UserService userService;
+
     @GetMapping("/api/admin/role_1")
     public ResponseData listRoles_1(){
         return new ResponseData(ExceptionMsg.SUCCESS,adminRoleService.list());
@@ -55,6 +62,7 @@ public class UserController implements Serializable {
     }
     @GetMapping("/api/admin/user")
     @CrossOrigin
+    @RequiresRoles("admin")
     public ResponseData listUsers_1() {
         try {
             return new ResponseData(ExceptionMsg.SUCCESS,userService.list());
@@ -69,6 +77,8 @@ public class UserController implements Serializable {
         List<User> userList = new ArrayList<>(userDAO.findAll());
         return new ResponseData(ExceptionMsg.SUCCESS,userList);
     }
+    @ApiOperation("添加用户的接口")
+
     @PutMapping("/api/admin/user")
     public ResponseData editUser(@RequestBody User requestUser) {
         if(userService.editUser(requestUser)) {
@@ -77,7 +87,7 @@ public class UserController implements Serializable {
             return new ResponseData(ExceptionMsg.FAILED,"faile");
         }
     }
-    @RequestMapping("")
+    @RequestMapping("/user/list")
     public ModelAndView articlelist(@RequestParam(value = "start", defaultValue = "0") Integer start,
                                     @RequestParam(value = "limit", defaultValue = "5") Integer limit) {
         start = start < 0 ? 0 : start;
@@ -114,17 +124,13 @@ public class UserController implements Serializable {
             return new ResponseData(ExceptionMsg.FAILED,"更新异常");
         }
     }
-
-    //http://localhost:8080/getUserById?Id=1
-    @GetMapping(value = "/getUserById")
-    public User getUserById(int Id){
-        return userDAO.findById(Id);
-    }
-
-    //http://localhost:8080/getUserByUserName?userName=dalaoyang
-    @GetMapping(value = "/getUserByUserName")
-    public List<User> getUserByUserName(String userName){
-        return (List<User>) userDAO.findByUsername(userName);
+    @GetMapping("/api/initvcode")
+    public ResponseData initvcodebyphone(@RequestParam(value = "phone") String phone){
+        if(userService.wxisExist(phone)) {
+            return new ResponseData(ExceptionMsg.SUCCESS,"生成成功，有效期为5min");
+        }else {
+            return new ResponseData(ExceptionMsg.FAILED,"生成失败请重试");
+        }
     }
 
 

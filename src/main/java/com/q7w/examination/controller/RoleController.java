@@ -4,7 +4,7 @@ import com.q7w.examination.Service.AdminPermissionService;
 import com.q7w.examination.Service.AdminRoleMenuService;
 import com.q7w.examination.Service.AdminRolePermissionService;
 import com.q7w.examination.Service.AdminRoleService;
-import com.q7w.examination.entity.AdminRole;
+import com.q7w.examination.entity.Uesr.AdminRole;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;

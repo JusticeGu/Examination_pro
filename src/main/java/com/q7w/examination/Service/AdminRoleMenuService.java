@@ -1,7 +1,7 @@
 package com.q7w.examination.Service;
 
 import com.q7w.examination.dao.AdminRoleMenuDAO;
-import com.q7w.examination.entity.AdminRoleMenu;
+import com.q7w.examination.entity.Uesr.AdminRoleMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;

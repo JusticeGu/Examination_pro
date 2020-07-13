@@ -1,11 +1,14 @@
 package com.q7w.examination.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.q7w.examination.entity.Uesr.AdminRole;
+import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import net.minidev.json.annotate.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
+@ApiModel
 public class User extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 3033545151355633270L;

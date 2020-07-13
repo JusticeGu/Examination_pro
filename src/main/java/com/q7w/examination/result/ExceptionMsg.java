@@ -18,7 +18,7 @@ public enum ExceptionMsg {
     FileEmpty("000400","上传文件为空"),
     LimitPictureSize("000401","图片大小必须小于2M"),
     LimitPictureType("000402","图片格式必须为'jpg'、'png'、'jpge'、'gif'、'bmp'"),
-    FAILED_403("403","鉴权失败，请联系管理员提权"),
+    FAILED_403("403","鉴权失败，您没有对此服务的访问权限"),
     ;
     private ExceptionMsg(String code, String msg) {
         this.code = code;

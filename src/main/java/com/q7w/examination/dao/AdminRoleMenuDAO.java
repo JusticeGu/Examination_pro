@@ -1,7 +1,7 @@
 package com.q7w.examination.dao;
 
 
-import com.q7w.examination.entity.AdminRoleMenu;
+import com.q7w.examination.entity.Uesr.AdminRoleMenu;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

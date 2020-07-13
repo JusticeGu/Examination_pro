@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import net.minidev.json.annotate.JsonIgnore;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 @Entity
@@ -19,15 +20,15 @@ public class Exroom extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 3033545151355633270L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int Kid;
-
+    private int kid;
+    @NotNull
     private String name;
     private int pid;//试卷号
     private String remark;//考场备注
     private boolean enable;//考场启用
-    private String group;//开放群体
+    private int grouptype;//开放群体 0-所有人 1-列表
     private long starttime;//起始时间
-    private long deadline;
+    private long deadline;//截至进入时间
     private long time;//考试时间
     private int type;//考场类型
 

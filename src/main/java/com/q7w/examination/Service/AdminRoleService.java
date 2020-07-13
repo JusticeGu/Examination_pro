@@ -1,11 +1,10 @@
 package com.q7w.examination.Service;
 
-import com.q7w.examination.Service.UserService;
 import com.q7w.examination.dao.AdminRoleDAO;
-import com.q7w.examination.entity.AdminMenu;
-import com.q7w.examination.entity.AdminPermission;
-import com.q7w.examination.entity.AdminRole;
-import com.q7w.examination.entity.AdminUserRole;
+import com.q7w.examination.entity.Uesr.AdminMenu;
+import com.q7w.examination.entity.Uesr.AdminPermission;
+import com.q7w.examination.entity.Uesr.AdminRole;
+import com.q7w.examination.entity.Uesr.AdminUserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;

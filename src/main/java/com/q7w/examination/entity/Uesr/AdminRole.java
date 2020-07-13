@@ -1,6 +1,8 @@
-package com.q7w.examination.entity;
+package com.q7w.examination.entity.Uesr;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.q7w.examination.entity.Uesr.AdminMenu;
+import com.q7w.examination.entity.Uesr.AdminPermission;
 import lombok.Data;
 import lombok.ToString;
 

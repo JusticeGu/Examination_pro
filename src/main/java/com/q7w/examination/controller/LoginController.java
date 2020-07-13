@@ -8,40 +8,30 @@ import com.q7w.examination.entity.OpenIdJson;
 import com.q7w.examination.entity.User;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
-import com.q7w.examination.util.CASUtil;
 import com.q7w.examination.util.HttpUtil;
+import com.q7w.examination.util.JWTToken;
 import com.q7w.examination.util.JwtUtils;
+import com.q7w.examination.util.Pbkdf2Sha256;
 import io.buji.pac4j.subject.Pac4jPrincipal;
-import org.apache.http.HttpEntity;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
-import org.pac4j.cas.profile.CasProfile;
-import org.pac4j.cas.profile.CasRestProfile;
-import org.pac4j.core.context.J2EContext;
-import org.pac4j.core.credentials.TokenCredentials;
-import org.pac4j.core.profile.CommonProfile;
-import org.pac4j.core.profile.ProfileManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
-import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.annotation.Resource;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.Console;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 public class LoginController implements Serializable {
@@ -94,17 +84,43 @@ public class LoginController implements Serializable {
         try {
             subject.login(usernamePasswordToken);
             User user = userService.findByUsername(username);
-            if (!user.isEnabled()) {
+            if (user.isEnabled()) {
                 return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户状态异常，请联系客服人员处理");
             }
-            return new ResponseData(ExceptionMsg.SUCCESS,user.getUsername());
+            Map<String,Object> userinfo = new Hashtable<>();
+            userinfo.put("token", JwtUtils.sign(username, "s"));
+            userinfo.put("username",username );
+            return new ResponseData(ExceptionMsg.SUCCESS,userinfo);
         } catch (IncorrectCredentialsException e) {
             return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户名或密码错误");
         } catch (UnknownAccountException e) {
             return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户名或密码错误");
         }
     }
+    @PostMapping("/api/jwtlogin")
+    public ResponseData jwtlogin(@RequestBody User requestUser) {
+        String username = requestUser.getUsername();
+        username = HtmlUtils.htmlEscape(username);
+        String password = requestUser.getUser_password();
+        User user = userService.findByUsername(username);
+        if(user==null){return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户名或密码错误");}
+        boolean match = Pbkdf2Sha256.verification(password,user.getUser_password());
+        if (match){
+            if (user.isEnabled()) {
+                return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户状态异常，请联系客服人员处理");
+        }
+            Map<String,Object> userinfo = new Hashtable<>();
+            String token = JwtUtils.sign(username, "s");
+            userinfo.put("token",token);
+            userinfo.put("username",username);
+          //  redisService.hmset(token,userinfo,3600);
+            redisService.set(token, user,600);
+            return new ResponseData(ExceptionMsg.SUCCESS,userinfo);}
+            else {
+                return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户名或密码错误");
+                }
 
+    }
     @PostMapping(value = "/api/login1")
     @RequiresPermissions("/api/login1")
     @ResponseBody
@@ -163,61 +179,16 @@ public class LoginController implements Serializable {
     @CrossOrigin
     public ResponseData au() {
         try {
-           // Subject subject= SecurityUtils.getSubject();
-         //   String username = JwtUtils.getUsername(SecurityUtils.getSubject().getPrincipal().toString());
-            Pac4jPrincipal p = SecurityUtils.getSubject().getPrincipals().oneByType(Pac4jPrincipal.class);
-            CommonProfile profile = p.getProfile();
-            String username = profile.getId();
-
-             User user = userService.findByUsername(username);
-            return new ResponseData(ExceptionMsg.SUCCESS,user.getUsername());
+            Subject subject= SecurityUtils.getSubject();
+            String username = SecurityUtils.getSubject().getPrincipal().toString();
+        //    String username = userService.getusernamebysu();
+           //  User user = userService.findByUsername(username);
+            return new ResponseData(ExceptionMsg.SUCCESS,username);
            // return new ResponseData(ExceptionMsg.FAILED,"异常");
         }
         catch (Exception e){
             return new ResponseData(ExceptionMsg.FAILED,"用户未登录");
         }
-    }
-
-    @GetMapping("/casindex")
-    public String index(HttpServletRequest request, Model model) {
-        System.out.println(request.getUserPrincipal().getName());
-        System.out.println(SecurityUtils.getSubject().getPrincipal());
-        model.addAttribute("userName", "maple");
-        return "/index";
-    }
-
-    @GetMapping("/caslogout")
-    public String caslogout(){
-        SecurityUtils.getSubject().logout();
-        return "redirect:https://cas.q7w.cn:8443/logout?service=http://localhost/logouttips";
-    }
-    @PostMapping("/caslogin")
-    public String loginbycas(String username, String password) {
-        Subject subject = SecurityUtils.getSubject();
-        UsernamePasswordToken token = new UsernamePasswordToken(username, password, true);
-        try {
-            logger.info("对用户[" + username + "]进行登录验证..验证开始");
-            subject.login(token);
-            logger.info("对用户[" + username + "]进行登录验证..验证通过");
-        } catch (UnknownAccountException uae) {
-            logger.info("对用户[" + username + "]进行登录验证..验证未通过,未知账户");
-        } catch (IncorrectCredentialsException ice) {
-            logger.info("对用户[" + username + "]进行登录验证..验证未通过,错误的凭证");
-        } catch (LockedAccountException lae) {
-            logger.info("对用户[" + username + "]进行登录验证..验证未通过,账户已锁定");
-        } catch (ExcessiveAttemptsException eae) {
-            logger.info("对用户[" + username + "]进行登录验证..验证未通过,错误次数过多");
-        } catch (AuthenticationException ae) {
-            logger.info("对用户[" + username + "]进行登录验证..验证未通过,堆栈轨迹如下");
-            ae.printStackTrace();
-        }
-        if (subject.isAuthenticated()) {
-            logger.info("用户[" + username + "]登录认证通过(这里可以进行一些认证通过后的一些系统参数初始化操作)");
-            return "redirect:/user";
-        }
-        token.clear();
-        return "redirect:/login";
-
     }
 
     @GetMapping("api/authentication")

@@ -16,7 +16,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseBody
     public ResponseData handleAuthorizationException(UnauthorizedException e) {
-        String message = "权限认证失败";
+        String message = "权限认证失败,请联系管理员确认权限";
         return new ResponseData(ExceptionMsg.FAILED_403,message);
     }
 }

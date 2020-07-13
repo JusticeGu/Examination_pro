@@ -1,5 +1,6 @@
 package com.q7w.examination.entity;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +9,8 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "paper")
@@ -24,15 +27,17 @@ public class Paper extends BaseEntity implements Serializable {
     private int type;//试卷类型1-自主命题 2-组卷 3-答题卡模式
     private int status;
     private boolean enable;
-    private int singlenum;//单选数量
-    private int mulnum;//多选数量
-    private int multype;//多选题得分逻辑 1-全对得分 2-错选扣分
-    private int subnum;//主观数量
+    private String questionId;//问题号
     private float sinscore;//单选分数
     private float mulscore;//多选分数
     private float subscore;//主观分数
-    private String scorelist;//分数列表---自主命题试卷可用
-    private String sinans;//单选答案列表
-    private String mulans;//多选答案列表
+    private int singlenum;//单选数量
+    private int mulnum;//多选数量
+    private int subnum;//主观数量
+    @Transient
+    private List<Map<String,Object>> paperQuestions;//前端显示
+    @Transient
+    private List<Questions> questionsList;//问题列表后端映射
+
 
 }

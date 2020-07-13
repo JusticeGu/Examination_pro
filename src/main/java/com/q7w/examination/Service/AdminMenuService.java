@@ -1,15 +1,14 @@
 package com.q7w.examination.Service;
 
 import com.q7w.examination.dao.AdminMenuDAO;
-import com.q7w.examination.entity.AdminMenu;
-import com.q7w.examination.entity.AdminRoleMenu;
-import com.q7w.examination.entity.AdminUserRole;
+import com.q7w.examination.entity.Uesr.AdminMenu;
+import com.q7w.examination.entity.Uesr.AdminRoleMenu;
+import com.q7w.examination.entity.Uesr.AdminUserRole;
 import com.q7w.examination.entity.User;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 

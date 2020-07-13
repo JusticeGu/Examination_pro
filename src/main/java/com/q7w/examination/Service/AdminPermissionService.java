@@ -2,9 +2,9 @@ package com.q7w.examination.Service;
 
 
 import com.q7w.examination.dao.AdminPermissionDAO;
-import com.q7w.examination.entity.AdminPermission;
-import com.q7w.examination.entity.AdminRole;
-import com.q7w.examination.entity.AdminRolePermission;
+import com.q7w.examination.entity.Uesr.AdminPermission;
+import com.q7w.examination.entity.Uesr.AdminRole;
+import com.q7w.examination.entity.Uesr.AdminRolePermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -19,6 +19,8 @@
         <fastjson_version>1.2.28</fastjson_version>
         <pac4j.version>4.0.0</pac4j.version>
         <pac4j-cas.version>3.0.2</pac4j-cas.version>
+        <hutool.version>5.3.5</hutool.version>
+        <guava.version>29.0-jre</guava.version>
     </properties>
     <repositories>
         <repository>
@@ -122,10 +124,6 @@
             <version>1.1.1</version>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.gitee.sunchenbin.mybatis.actable</groupId>
             <artifactId>mybatis-enhance-actable</artifactId>
             <version>1.0.8.1.RELEASE</version>
@@ -156,9 +154,15 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>2.9.2</version>
         </dependency>
+        <!--mq消息队列-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <!--mail-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
         <!-- 图片上传 SDK 阿里云oss -->
         <dependency>
@@ -236,7 +240,25 @@
             <version>2.1.1</version>
             <scope>compile</scope>
         </dependency>
+        <!-- HuTool -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+        <!-- guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
         <!--        buji-pac4j dependencies end -->
+        <!--jaccard相似系数、余弦相似度-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.8</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
