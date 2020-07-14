@@ -1,29 +1,23 @@
 package com.q7w.examination.controller;
 
+import cn.hutool.core.date.DateUtil;
+import com.q7w.examination.Service.EmailService;
 import com.q7w.examination.Service.AdminRoleService;
 import com.q7w.examination.Service.UserService;
 import com.q7w.examination.entity.User;
 import com.q7w.examination.dao.UserDAO;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
-import com.q7w.examination.util.Pbkdf2Sha256;
-import com.q7w.examination.util.ValidUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.HtmlUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,6 +25,7 @@ import java.util.List;
 
 @RestController
 @Api(tags = "用户管理相关接口")
+@RequestMapping("/api/user")
 public class UserController implements Serializable {
     private static final long serialVersionUID = 3033545151355633240L;
     @Autowired
@@ -39,8 +34,33 @@ public class UserController implements Serializable {
     AdminRoleService adminRoleService;
     @Autowired
     UserService userService;
-
-    @GetMapping("/api/admin/role_1")
+    @Autowired
+    EmailService emailService;
+    @RequestMapping(value="/sendcheckcode",method = RequestMethod.POST)
+    @CrossOrigin
+    @ApiOperation("邮箱验证码发送接口")
+    public ResponseData sendcode(String to){
+        String code = userService.sendmailsecode(to);
+        String now = DateUtil.now();
+        if (code!=null){
+            String content = "您于"+now+"申请的邮箱验证码为：【"+code+"】(5分钟有效)如非本人操作请及时修改密码!【河马在线考试运营团队】（此邮箱为系统邮箱请勿回复）";
+            emailService.sendTextEmail(content, to, "【河马在线考试】您正在进行邮箱验证");
+            return new ResponseData(ExceptionMsg.SUCCESS,"操作成功");
+        }else {
+            return new ResponseData(ExceptionMsg.FAILED,"发送失败");
+        }
+    }
+    @RequestMapping(value="/checkcode",method = RequestMethod.POST)
+    @CrossOrigin
+    @ApiOperation("邮箱验证码验证接口")
+    public ResponseData checkcode(String mail,String code){
+        if (userService.checkmailcode(mail,code)){
+            return new ResponseData(ExceptionMsg.SUCCESS,"验证成功");}
+        else {
+            return new ResponseData(ExceptionMsg.FAILED,"验证失败");
+        }
+    }
+    @GetMapping("/admin/role_1")
     public ResponseData listRoles_1(){
         return new ResponseData(ExceptionMsg.SUCCESS,adminRoleService.list());
     }
@@ -52,7 +72,7 @@ public class UserController implements Serializable {
         return userList;
         //return new ResponseData(ExceptionMsg.SUCCESS,userList);
     }
-    @PutMapping("/api/admin/user/status")
+    @PutMapping("/admin/user/status")
     public  ResponseData updateUserStatus(@RequestBody User requestUser) {
         if (userService.updateUserStatus(requestUser)) {
             return new ResponseData(ExceptionMsg.SUCCESS,"SUCCESS");
@@ -60,7 +80,7 @@ public class UserController implements Serializable {
             return new ResponseData(ExceptionMsg.FAILED,"faile");
         }
     }
-    @GetMapping("/api/admin/user")
+    @GetMapping("/admin/user")
     @CrossOrigin
     @RequiresRoles("admin")
     public ResponseData listUsers_1() {
@@ -79,7 +99,7 @@ public class UserController implements Serializable {
     }
     @ApiOperation("添加用户的接口")
 
-    @PutMapping("/api/admin/user")
+    @PutMapping("/admin/user")
     public ResponseData editUser(@RequestBody User requestUser) {
         if(userService.editUser(requestUser)) {
             return new ResponseData(ExceptionMsg.SUCCESS,"SUCCESS");
@@ -116,7 +136,7 @@ public class UserController implements Serializable {
         return "success";
     }
 
-    @PostMapping("/api/userdelete")
+    @PostMapping("/userdelete")
     public ResponseData deleteUser(@RequestBody User user) {
         if(userService.deleteUser(user)) {
             return new ResponseData(ExceptionMsg.SUCCESS,"删除成功");
@@ -124,14 +144,5 @@ public class UserController implements Serializable {
             return new ResponseData(ExceptionMsg.FAILED,"更新异常");
         }
     }
-    @GetMapping("/api/initvcode")
-    public ResponseData initvcodebyphone(@RequestParam(value = "phone") String phone){
-        if(userService.wxisExist(phone)) {
-            return new ResponseData(ExceptionMsg.SUCCESS,"生成成功，有效期为5min");
-        }else {
-            return new ResponseData(ExceptionMsg.FAILED,"生成失败请重试");
-        }
-    }
-
 
 }

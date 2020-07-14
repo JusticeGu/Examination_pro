@@ -310,8 +310,8 @@ public class UserServiceimpl implements UserService {
 
     @Override
     public boolean checkmailcode(String mail, String code) {
-        String codeInDB = redisService.get("mailcode:"+mail).toString();
-        if (codeInDB==null){return false;}
+        if (!redisService.hasKey("mailcode:"+mail)){return false;}
+        Object codeInDB = redisService.get("mailcode:"+mail).toString();
         if (code.equals(codeInDB)){
             return true;
         }else {

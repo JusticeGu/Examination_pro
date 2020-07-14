@@ -1,11 +1,8 @@
-package com.q7w.examination.RabbitMQ.Consumer;
+package com.q7w.examination.Service.impl;
 
-import com.q7w.examination.RabbitMQ.RabbitMQConfig;
-import org.hibernate.validator.constraints.Email;
+import com.q7w.examination.Service.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.core.io.FileSystemResource;
@@ -19,8 +16,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.File;
 
 @Service
-@RabbitListener(queues = RabbitMQConfig.QUENE_NAME)
-public class EmailServiceImpl implements EmailService{
+public class EmailServiceImpl implements EmailService {
     private static Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
     @Autowired
     private JavaMailSender javaMailSender;

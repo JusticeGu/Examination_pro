@@ -2,9 +2,11 @@ package com.q7w.examination.controller;
 
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
-import com.q7w.examination.RabbitMQ.Consumer.EmailService;
+
 import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.Service.UserService;
+import com.q7w.examination.entity.Mail;
+import com.q7w.examination.rabbit.SenderA;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
 import com.q7w.examination.util.FileUtil;
@@ -22,6 +24,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +38,7 @@ public class TestController implements Serializable {
     @Autowired
     UserService userService;
     @Autowired
-    EmailService emailService;
+    private SenderA queueSender;
     private static final long serialVersionUID = 3033545151355633240L;
     @RequestMapping(value="/test/excel",method = RequestMethod.POST)
     @CrossOrigin
@@ -70,29 +73,15 @@ public class TestController implements Serializable {
     @RequestMapping(value="/test/sendmail",method = RequestMethod.POST)
     @CrossOrigin
     public ResponseData sendemail(String to,String title,String content){
-        emailService.sendTextEmail(content, to, title);
+        if (to.equals(null)||title.equals(null)||content.equals(null)){
+            return new ResponseData(ExceptionMsg.FAILED_F,"字段不完整，请完整填写所有字段");}
+        Map map = new HashMap();
+        map.put("to", to);
+        map.put("text", content);
+        map.put("subject", title);
+        queueSender.send(map);
         return new ResponseData(ExceptionMsg.SUCCESS,"发送成功");
     }
-    @RequestMapping(value="/test/sendcheckcode",method = RequestMethod.POST)
-    @CrossOrigin
-    public ResponseData sendcode(String to){
-        String code = userService.sendmailsecode(to);
-        if (code!=null){
-            String content = "您刚才申请到的邮箱验证码为：【"+code+"】(5分钟有效)如非本人操作请及时修改密码!";
-            emailService.sendTextEmail(content, to, "【河马在线考试】您正在进行邮箱验证");
-            return new ResponseData(ExceptionMsg.SUCCESS,"操作成功");
-        }else {
-            return new ResponseData(ExceptionMsg.FAILED,"发送失败");
-        }
-    }
-    @RequestMapping(value="/test/checkcode",method = RequestMethod.POST)
-    @CrossOrigin
-    public ResponseData checkcode(String mail,String code){
-        if (userService.checkmailcode(mail, code)){
-        return new ResponseData(ExceptionMsg.SUCCESS,"验证成功");}
-        else {
-            return new ResponseData(ExceptionMsg.FAILED,"验证失败");
-        }
-    }
+
 
 }

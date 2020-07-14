@@ -1,4 +1,4 @@
-package com.q7w.examination.RabbitMQ.Consumer;
+package com.q7w.examination.Service;
 
 public interface EmailService {
 
