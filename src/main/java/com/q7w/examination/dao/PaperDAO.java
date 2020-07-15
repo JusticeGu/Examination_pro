@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface PaperDAO extends JpaRepository<Paper,Integer> {
     Paper findByPid(int pid);
+    Paper findByName(String name);
+    List<Paper> findAllByType(int cid);
 }

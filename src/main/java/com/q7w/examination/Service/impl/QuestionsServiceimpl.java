@@ -56,9 +56,9 @@ public class QuestionsServiceimpl implements QuestionsService {
         Long createtime = now.getTime();
         questions.setCreateTime(createtime);
         questions.setUpdateTime(createtime);
-        String username = userService.getusernamebysu();
-        questions.setCreateBy(username);
-        if (!courseService.isexist(questions.getCid())){return 3;}
+     //   String username = userService.getusernamebysu();
+        questions.setCreateBy("sys");
+  //      if (!courseService.isexist(questions.getCid())){return 3;}
         try {
             questionsDAO.save(questions);
             return 1;
@@ -139,6 +139,21 @@ public class QuestionsServiceimpl implements QuestionsService {
         } catch (IllegalArgumentException e){
             return 2;
         }
+    }
+
+    @Override
+    public List<Questions> getcourseqlist(int cid) {
+        return questionsDAO.findAllByCid(cid);
+    }
+
+    @Override
+    public List<Questions> getbycidtypediff(int cid, int type, int diff) {
+        return null;
+    }
+
+    @Override
+    public Questions getquestionbyid(int qid) {
+        return questionsDAO.findByQid(qid);
     }
 
     @Override

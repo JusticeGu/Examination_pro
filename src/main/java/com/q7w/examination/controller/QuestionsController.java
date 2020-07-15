@@ -46,7 +46,7 @@ public class QuestionsController {
     }
     @PostMapping("/addquestion")
     @ApiOperation("新增问题问题")
-    public ResponseData addquestion(Questions questions){
+    public ResponseData addquestion(@RequestBody Questions questions){
         int ans= questionsService.addquestion(questions);
         switch (ans){
             case 1:

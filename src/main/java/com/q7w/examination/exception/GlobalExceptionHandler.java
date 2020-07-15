@@ -176,7 +176,7 @@ public class GlobalExceptionHandler {
         logger.error("Exception", e);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("rspCode", 500);
-        map.put("rspMsg", e.getMessage());
+        map.put("rspMsg", "后端发生错误："+e.getMessage());
         //发生异常进行日志记录，写入数据库或者其他处理，此处省略
         return map;
     }

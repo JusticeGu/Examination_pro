@@ -3,9 +3,12 @@ package com.q7w.examination.controller;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 
+import com.alibaba.fastjson.JSONObject;
 import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.Service.UserService;
+import com.q7w.examination.entity.Answer;
 import com.q7w.examination.entity.Mail;
+import com.q7w.examination.entity.Questions;
 import com.q7w.examination.rabbit.SenderA;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
@@ -81,6 +84,26 @@ public class TestController implements Serializable {
         map.put("subject", title);
         queueSender.send(map);
         return new ResponseData(ExceptionMsg.SUCCESS,"发送成功");
+    }@RequestMapping(value="/test/stringtest",method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseData stringtest(String to){
+        Questions qu1 = new Questions();
+        qu1.setQuestionName("test q");
+        qu1.setOptionA("1");
+        qu1.setOptionB("2");
+        qu1.setType(1);
+        qu1.setAnswer("C");
+        List<Questions> qlist = new ArrayList<Questions>();
+        qlist.add(qu1);
+        String mid = JSONObject.toJSONString(qlist);
+        List<Questions> qu2 = JSONObject.parseObject(mid,List.class);
+
+        Map map = new HashMap();
+        map.put("to", qu2);
+        map.put("old", mid);
+     
+       // queueSender.send(map);
+        return new ResponseData(ExceptionMsg.SUCCESS,map);
     }
 
 

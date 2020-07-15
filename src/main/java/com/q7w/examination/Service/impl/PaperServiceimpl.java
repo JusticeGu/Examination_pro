@@ -1,14 +1,18 @@
 package com.q7w.examination.Service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.q7w.examination.Service.ExroomService;
 import com.q7w.examination.Service.PaperService;
 import com.q7w.examination.Service.QuestionsService;
 import com.q7w.examination.Service.UserService;
+import com.q7w.examination.dao.PaperDAO;
+import com.q7w.examination.dao.UserDAO;
 import com.q7w.examination.dto.AnsmarkDTO;
 import com.q7w.examination.entity.Examdata;
 import com.q7w.examination.entity.Paper;
 import com.q7w.examination.entity.Questions;
 import com.q7w.examination.util.ScoreUtil;
+import com.q7w.examination.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,23 +27,53 @@ public class PaperServiceimpl implements PaperService {
     @Autowired
     QuestionsService questionsService;
     @Autowired
-    PaperService paperService;
-    @Autowired
     ExroomService exroomService;
+    @Autowired
+    PaperDAO paperDAO;
+    @Autowired
+    TokenUtil tokenUtil;
 
     @Override
-    public int listPaper() {
-        return 0;
+    public List<Paper> listPaper() {
+        return paperDAO.findAll();
     }
 
     @Override
     public int addqPaper(Paper paper) {
-        return 0;
+        if (isExist(paper.getName())){return 0;}
+        Date now= new Date();
+        Long createtime = now.getTime();
+        paper.setCreateTime(createtime);
+        paper.setUpdateTime(createtime);
+        paper.setCreateBy("user");
+        String[] qulist = paper.getQuestionId().split(",");
+        Set<Questions> questionl = new HashSet();
+        for (int i=0;i<=qulist.length-1;i++){
+            try {
+                questionl.add(questionsService.getquestionbyid(Integer.parseInt(qulist[i])));
+            }catch (Exception e){
+                return 2;
+            }
+        }
+        paper.setQucontent(JSONObject.toJSONString(questionl));
+        try{
+            paperDAO.save(paper);
+            return 1;
+        } catch (IllegalArgumentException e){
+            return 2;
+        }
     }
 
     @Override
+    public Set<Questions> getPaperList(int pid) {
+        Paper paper = paperDAO.findByPid(pid);
+        Set<Questions> questionSet = JSONObject.parseObject(paper.getQucontent(),Set.class);
+        return questionSet;
+    }
+    @Override
     public boolean isExist(String papername) {
-        return false;
+        Paper paper=paperDAO.findByName(papername);
+        return null!=paper;
     }
 
     @Override
@@ -49,7 +83,9 @@ public class PaperServiceimpl implements PaperService {
 
     @Override
     public int delPaper(int pid) {
-        return 0;
+        if (!isExist(pid)){return -1;}
+        paperDAO.deleteById(pid);
+        return 1;
     }
 
     @Override
@@ -59,22 +95,28 @@ public class PaperServiceimpl implements PaperService {
 
 
     @Override
-    public int isExist(int pid) {
-        return 0;
+    public boolean isExist(int pid) {
+        Paper paper=paperDAO.findByPid(pid);
+        return null!=paper;
     }
 
-    @Override
-    public List<Map<String, Object>> getPaperList() {
-        return null;
-    }
 
     @Override
     public List<Map<String, Object>> createPaper(int pid) {
-        Paper paper = paperService.findPaperbyid(pid);
+        Paper paper = findPaperbyid(pid);
         if (paper.getType() == 1) {
             //   List<Questions> questoonList = new ArrayList<Questions>(questionsService.getquestions(1,1,1,1));
         }
         return null;
+    }
+
+    @Override
+    public int submitpaper(int kid,int pid, HttpServletRequest request) {
+        String username = tokenUtil.getusername(request);
+        if (username==null){return 0;}
+        int uid = userService.findByUsername(username).getUId();
+        markscore(uid, pid, kid, request);
+        return 0;
     }
 
     /**

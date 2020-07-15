@@ -48,7 +48,7 @@ public class RabbitmqConfig {
         // 当所有消费客户端连接断开后，是否自动删除队列
         boolean autoDelete = false;
 
-        return new TopicExchange(name);
+        return new TopicExchange(name,durable,autoDelete);
     }
 
     @Bean

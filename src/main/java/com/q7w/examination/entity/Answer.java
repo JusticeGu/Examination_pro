@@ -2,14 +2,12 @@ package com.q7w.examination.entity;
 
 import lombok.Data;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
 
 @Data
+@Entity
 @Table(name = "s_answer")
 public class Answer {
 
@@ -24,8 +22,8 @@ public class Answer {
     private int uid;
     private int pid;
     private int kid;
-    private List<Map<Integer,Object>>  objanslist;//客观题答案列表
-    private List<Map<Integer,Object>> subanslist;//
+    private String  anslist;//客观题答案列表
+    private String subanslist;//
     private String wronglist;
 
 

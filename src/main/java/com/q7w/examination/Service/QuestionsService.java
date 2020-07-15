@@ -15,6 +15,9 @@ public interface QuestionsService {
     public int addquestion(Questions questions);
     public int modifyquestion(Questions questions);
     public int uploadquestion(MultipartFile multipartFile);
+    public List<Questions> getcourseqlist(int cid);
+    public List<Questions> getbycidtypediff(int cid,int type,int diff);
+    public Questions getquestionbyid(int qid);
     public int delquestion(int qid);
     public String findquestion();
     public List<Questions> getquestionbypid(int pid);

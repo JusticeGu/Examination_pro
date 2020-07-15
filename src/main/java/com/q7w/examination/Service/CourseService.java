@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CourseService {
     public List<Course> list();
-    public int addCourse();
+    public int addCourse(Course course);
     public boolean isexist(int cid);
 
 }

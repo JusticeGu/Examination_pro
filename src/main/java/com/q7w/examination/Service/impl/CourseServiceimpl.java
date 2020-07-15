@@ -6,6 +6,7 @@ import com.q7w.examination.entity.Course;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 @Service
 public class CourseServiceimpl implements CourseService {
@@ -17,8 +18,18 @@ public class CourseServiceimpl implements CourseService {
     }
 
     @Override
-    public int addCourse() {
-        return 0;
+    public int addCourse(Course course) {
+        Date now= new Date();
+        Long createtime = now.getTime();
+        course.setCreateTime(createtime);
+        course.setUpdateTime(createtime);
+        try{
+            courseDAO.save(course);
+            return 1;
+        } catch (IllegalArgumentException e){
+            return 2;
+        }
+
     }
 
     @Override

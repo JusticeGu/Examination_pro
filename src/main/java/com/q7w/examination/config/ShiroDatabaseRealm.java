@@ -67,7 +67,7 @@ public class ShiroDatabaseRealm extends AuthorizingRealm {
             throw new AuthenticationException("令牌已过期");
         } else {
             redisService.expire(token, 60);
-            return new SimpleAuthenticationInfo(token, token, "MyRealm");
+            return new SimpleAuthenticationInfo(token, token, "ShiroDatabaseRealm");
         }
 
     }
