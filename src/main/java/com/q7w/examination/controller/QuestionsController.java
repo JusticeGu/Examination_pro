@@ -21,7 +21,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * @author xiaogu
+ * @date 2020/7/15 19:29
+ **/
 @RestController
 @Api(tags = "问题服务接口")
 @RequestMapping("/api/question")
@@ -34,6 +37,11 @@ public class QuestionsController {
     @ApiOperation("获取所有问题")
     public ResponseData getAllList(){
         return new ResponseData(ExceptionMsg.SUCCESS,questionsService.list());
+    }
+    @GetMapping("/typelist")
+    @ApiOperation("获取指定类型所有问题")
+    public ResponseData gettypeList(int type){
+        return new ResponseData(ExceptionMsg.SUCCESS,questionsService.listbytype(type));
     }
     @GetMapping("/getlistbycid")
     @ApiOperation("根据课程代码获取问题")
@@ -59,11 +67,35 @@ public class QuestionsController {
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
 
     }
+    @PutMapping("/putquestion")
+    @ApiOperation("修改问题信息")
+    public ResponseData modifyquestion(@RequestBody Questions questions){
+        int ans= questionsService.modifyquestion(questions);
+        switch (ans){
+            case 1:
+                return new ResponseData(ExceptionMsg.SUCCESS,"题目修改成功，请勿重复操作");
+            case 2:
+                return new ResponseData(ExceptionMsg.FAILED,"修改失败");
+            case 3:
+                return new ResponseData(ExceptionMsg.FAILED_F,"参数非法，请从正规接口操作或联系管理员");
+        }
+        return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
+
+    }
     @RequestMapping(value="/uploadquestion",method = RequestMethod.POST)
     @CrossOrigin
     @ApiOperation("上传问题excel")
-    public ResponseData uploadquestion(int exid,MultipartFile multipartFile){
-        return new ResponseData(ExceptionMsg.SUCCESS,"ok");
+    public ResponseData uploadquestion(MultipartFile multipartFile){
+        int ans = questionsService.uploadquestion(multipartFile);
+        switch (ans){
+            case 1:
+                return new ResponseData(ExceptionMsg.SUCCESS,"上传成功");
+            case 2:
+                return new ResponseData(ExceptionMsg.FAILED,"上传失败");
+            case 3:
+                return new ResponseData(ExceptionMsg.FAILED_F,"参数非法，请从正规接口操作或联系管理员");
+        }
+        return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
 
     }
 

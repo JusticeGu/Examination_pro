@@ -32,7 +32,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-
+/**
+ * @author xiaogu
+ * @date 2020/7/15 19:29
+ **/
 @RestController
 public class LoginController implements Serializable {
     @Autowired
@@ -74,6 +77,7 @@ public class LoginController implements Serializable {
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
     }
     @PostMapping("/api/login")
+    @CrossOrigin
     public ResponseData login(@RequestBody User requestUser) {
         String username = requestUser.getUsername();
         username = HtmlUtils.htmlEscape(username);
@@ -98,6 +102,7 @@ public class LoginController implements Serializable {
         }
     }
     @PostMapping("/api/jwtlogin")
+    @CrossOrigin
     public ResponseData jwtlogin(@RequestBody User requestUser) {
         String username = requestUser.getUsername();
         username = HtmlUtils.htmlEscape(username);

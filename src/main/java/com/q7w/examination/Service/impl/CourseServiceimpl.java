@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+/**
+ * @author xiaogu
+ * @date 2020/7/15 19:29
+ **/
 @Service
 public class CourseServiceimpl implements CourseService {
     @Autowired
@@ -30,6 +34,13 @@ public class CourseServiceimpl implements CourseService {
             return 2;
         }
 
+    }
+
+    @Override
+    public int delCourse(int cid) {
+        if(!isexist(cid)){return -1;}
+        courseDAO.deleteById(cid);
+        return 1;
     }
 
     @Override

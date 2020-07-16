@@ -24,8 +24,10 @@ import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
 
-
-
+/**
+ * @author xiaogu
+ * @date 2020/7/15 19:29
+ **/
 @RestController
 public class CasLoginController {
     private static final Logger logger = LoggerFactory.getLogger(CasLoginController.class);

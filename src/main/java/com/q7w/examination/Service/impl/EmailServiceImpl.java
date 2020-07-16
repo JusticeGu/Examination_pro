@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
-
+/**
+ * @author xiaogu
+ * @date 2020/7/15 19:29
+ **/
 @Service
 public class EmailServiceImpl implements EmailService {
     private static Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);

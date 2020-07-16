@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
-
+/**
+ * @author xiaogu
+ * @date 2020/7/15 19:29
+ **/
 @RestController
 @Api(tags = "课程服务接口")
 @RequestMapping("/api/course")
@@ -37,5 +40,18 @@ public class CouseController {
                 return new ResponseData(ExceptionMsg.FAILED_F,"参数非法，请从正规接口操作或联系管理员");
         }
         return new ResponseData(ExceptionMsg.FAILED,"后端村务");
+    }
+    @DeleteMapping("/delcourse")
+    @CrossOrigin
+    @ApiOperation("删除课程")
+    public ResponseData addeEroom(@RequestParam int cid){
+        int status = courseService.delCourse(cid);
+        switch (status) {
+            case -1:
+                return new ResponseData(ExceptionMsg.FAILED,"课程不存在或已删除请勿重复操作");
+            case 1:
+                return new ResponseData(ExceptionMsg.SUCCESS_ER,"删除成功");
+        }
+        return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
     }
 }

@@ -11,7 +11,8 @@ public interface QuestionsDAO  extends JpaRepository<Questions,Integer> {
     Questions findByCid(int cid);
   //  Questions findByCourseIDAndDiffcult(int cid,int diffcult);
     List<Questions> findAllByCid(int cid);
+    List<Questions> findAllByType(int type);
     List<Questions> findAllByCidAndTypeAndDiffcult(int cid,int type,int diffcult);
   //  List<Questions> findAllByCourseIDAndDiffcult(int cid,int diffcult);
-  //  List<Questions> findAllByTypeAndCourseID(int type,int cid);
+    List<Questions> findAllByTypeAndCid(int type,int cid);
 }

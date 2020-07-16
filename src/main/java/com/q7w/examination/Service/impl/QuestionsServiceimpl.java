@@ -23,7 +23,10 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * @author xiaogu
+ * @date 2020/7/15 19:29
+ **/
 @Service
 public class QuestionsServiceimpl implements QuestionsService {
     @Autowired
@@ -104,22 +107,23 @@ public class QuestionsServiceimpl implements QuestionsService {
             // 使用 ExcelUtil 读取 Excel 中的数据
             ExcelReader reader = ExcelUtil.getReader(file);
             // 输出到 Question 的 List 集合中
-            List<Questions> questions = reader.read(8, 9, Questions.class);
+            List<Map<String,Object>> questions = reader.readAll();
             // 手动删除临时文件
             if (!multipartFile.isEmpty()) {
                 file.deleteOnExit();
             }
 
-            for (Questions question : questions) {
+            for (Map<String,Object> question : questions) {
                 // 正确答案、难度、所属课程、类型 ID 检测
 
                 // 同步导入
                 synchronized (this) {
-                    // 过滤同名、同课程、同类型题目
-                    // 题目名称
-                    Questions newquestions = question;
+
+                    Questions newquestions = new Questions();
+                    newquestions.setAnswer(question.get("答案").toString());
                         // 插入题目数据
-                        this.questionsDAO.save(newquestions);
+                      //  this.questionsDAO.save(newquestions);
+                    System.out.println(question.get("问题主体"));
 
                 }
             }
@@ -141,10 +145,6 @@ public class QuestionsServiceimpl implements QuestionsService {
         }
     }
 
-    @Override
-    public List<Questions> getcourseqlist(int cid) {
-        return questionsDAO.findAllByCid(cid);
-    }
 
     @Override
     public List<Questions> getbycidtypediff(int cid, int type, int diff) {
@@ -162,27 +162,14 @@ public class QuestionsServiceimpl implements QuestionsService {
     }
 
     @Override
-    public List<Map<String, Object>> getquestions(int sin, int mul, int sub, int type) {
-        return null;
+    public List<Questions> listbytype(int type) {
+
+        return questionsDAO.findAllByType(type);
     }
 
     @Override
-    public List<QuestionsDTO> getquestionsdto(int sin, int mul, int sub, int type) {
+    public List<Questions> listbytypeandcid(int type, int cid) {
         return null;
-    }
-    @Override
-    public List<Map<String, Object>> checkmulans(Map<String, Object> map) {
-        return null;
-    }
-
-    @Override
-    public List<Map<String, Object>> checksubans(Map<String, Object> map) {
-        return null;
-    }
-
-    @Override
-    public int createscore(Examdata examdata) {
-        return 0;
     }
 
     @Override

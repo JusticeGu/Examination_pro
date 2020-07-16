@@ -8,5 +8,6 @@ public interface CourseService {
     public List<Course> list();
     public int addCourse(Course course);
     public boolean isexist(int cid);
+    public int delCourse(int cid);
 
 }

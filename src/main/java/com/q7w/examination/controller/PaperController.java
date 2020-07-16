@@ -1,6 +1,7 @@
 package com.q7w.examination.controller;
 
 import com.q7w.examination.Service.PaperService;
+import com.q7w.examination.dto.QuestionsDTO;
 import com.q7w.examination.entity.Exroom;
 import com.q7w.examination.entity.Paper;
 import com.q7w.examination.entity.Questions;
@@ -12,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-import java.util.Set;
-
+import java.util.*;
+/**
+ * @author xiaogu
+ * @date 2020/7/15 19:29
+ **/
 @RestController
 @Api(tags = "试卷服务接口")
 @RequestMapping("/api/paper")
@@ -22,15 +25,29 @@ public class PaperController {
     @Autowired
     PaperService paperService;
 
+    @GetMapping("/getpaperquestion")
+    @CrossOrigin
+    @ApiOperation("获取考卷数据教师端")
+    public ResponseData getpaperque(int pid){
+        if (!paperService.isExist(pid)){
+            return new ResponseData(ExceptionMsg.FAILED,"试卷不存在，请重新尝试"); }
+        List<Questions> questionsSet = paperService.getPaperList(pid);
+        if(!questionsSet.isEmpty()){
+        return new ResponseData(ExceptionMsg.SUCCESS,questionsSet);
+        }
+        else {
+            return new ResponseData(ExceptionMsg.FAILED_F,"试卷获取错误请重新获取");
+        }
+    }
     @GetMapping("/getpaperinfo")
     @CrossOrigin
-    @ApiOperation("获取考卷数据")
+    @ApiOperation("获取考卷数据考生端")
     public ResponseData getpaperinfo(int pid){
         if (!paperService.isExist(pid)){
             return new ResponseData(ExceptionMsg.FAILED,"试卷不存在，请重新尝试"); }
-        Set<Questions> questionsSet = paperService.getPaperList(pid);
+        Map questionsSet = paperService.getPaperInfo(pid);
         if(!questionsSet.isEmpty()){
-        return new ResponseData(ExceptionMsg.SUCCESS,questionsSet);
+            return new ResponseData(ExceptionMsg.SUCCESS,questionsSet);
         }
         else {
             return new ResponseData(ExceptionMsg.FAILED_F,"试卷获取错误请重新获取");
@@ -40,23 +57,23 @@ public class PaperController {
     @CrossOrigin
     @ApiOperation("提交答案数据")
     public ResponseData getpaperinfo(@PathVariable("kid") int kid,@PathVariable("pid") int pid
-            ,HttpServletRequest request){
-        int status = paperService.submitpaper(kid,pid,request);
-        switch (status) {
-            case 0:
+           ,HttpServletRequest request,@RequestBody Map map){
+        Map status = paperService.submitpaper(kid,pid,request,map);
+        switch (status.get("code").toString()) {
+            case "0":
                 return new ResponseData(ExceptionMsg.FAILED,"登录信息获取失败，请重试或联系管理员，严禁使用" +
                         "第三方工具进行提交");
-            case 1:
-                return new ResponseData(ExceptionMsg.SUCCESS_ER,"提交成功，" +
-                        "成绩会在教师端审核通过后显示，请耐心等候");
-            case 2:
+            case "200":
+                return new ResponseData(ExceptionMsg.SUCCESS_ER,"提交成功，你的成绩信息为" +
+                        status);
+            case "2":
                 return new ResponseData(ExceptionMsg.FAILED,"提交失败，请检查数据");
         }
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
     }
     @PostMapping("/addpaper")
     @CrossOrigin
-    @ApiOperation("提交答案数据")
+    @ApiOperation("添加试卷")
     public ResponseData addpaper(@RequestBody Paper paper){
         int status = paperService.addqPaper(paper);
         switch (status) {
@@ -66,6 +83,34 @@ public class PaperController {
                 return new ResponseData(ExceptionMsg.SUCCESS_ER,"提交成功,您可以创建考试绑定此试卷" );
             case 2:
                 return new ResponseData(ExceptionMsg.FAILED,"提交失败，请检查数据");
+        }
+        return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
+    }
+    @PostMapping("/modipaper")
+    @CrossOrigin
+    @ApiOperation("修改试卷")
+    public ResponseData modipaper(@RequestBody Paper paper){
+        int status = paperService.modifyPaper(paper);
+        switch (status) {
+            case 0:
+                return new ResponseData(ExceptionMsg.FAILED,"试卷已存在请勿重复操作");
+            case 1:
+                return new ResponseData(ExceptionMsg.SUCCESS_ER,"修改成功,您可以创建考试绑定此试卷" );
+            case 2:
+                return new ResponseData(ExceptionMsg.FAILED,"修改失败，请检查数据");
+        }
+        return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
+    }
+    @DeleteMapping("/delpaper")
+    @CrossOrigin
+    @ApiOperation("删除试卷")
+    public ResponseData addeEroom(@RequestParam int pid){
+        int status = paperService.delPaper(pid);
+        switch (status) {
+            case -1:
+                return new ResponseData(ExceptionMsg.FAILED,"试卷不存在或已删除请勿重复操作");
+            case 1:
+                return new ResponseData(ExceptionMsg.SUCCESS_ER,"删除成功");
         }
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
     }

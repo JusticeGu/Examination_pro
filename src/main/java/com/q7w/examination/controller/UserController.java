@@ -22,7 +22,10 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * @author xiaogu
+ * @date 2020/7/15 19:29
+ **/
 @RestController
 @Api(tags = "用户管理相关接口")
 @RequestMapping("/api/user")

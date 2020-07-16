@@ -16,7 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.File;
 import java.util.*;
-
+/**
+ * @author xiaogu
+ * @date 2020/7/15 19:29
+ **/
 @Service
 public class ExroomServiceimpl implements ExroomService {
     @Autowired
@@ -75,8 +78,8 @@ public class ExroomServiceimpl implements ExroomService {
     }
 
     @Override
-    public int listExroom() {
-        return 0;
+    public List<Exroom> listExroom() {
+        return exroomDAO.findAll();
     }
 
     @Override
@@ -92,7 +95,6 @@ public class ExroomServiceimpl implements ExroomService {
         } catch (IllegalArgumentException e){
             return 2;
         }
-
     }
 
     @Override
@@ -102,6 +104,8 @@ public class ExroomServiceimpl implements ExroomService {
 
     @Override
     public int delExroom(int kid) {
+        if(!isExist(kid)){return -1;}
+        exroomDAO.deleteById(kid);
         return 0;
     }
 

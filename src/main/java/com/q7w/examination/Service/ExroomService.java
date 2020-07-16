@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ExroomService {
-    public int listExroom();
+    public List<Exroom> listExroom();
     public int addExroom(Exroom exroom);
     public int modifyExroom(Exroom exroom);
     public int delExroom(int kid);
