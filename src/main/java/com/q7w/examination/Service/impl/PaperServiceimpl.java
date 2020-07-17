@@ -148,12 +148,12 @@ public class PaperServiceimpl implements PaperService {
     @Override
     public Map submitpaper(int kid,int pid, HttpServletRequest request,Map ansmap) {
         Map infomsg = new HashMap();
-        String username = tokenUtil.getusername(request);
-        if (username==null){
-            infomsg.put("code","0");
-            return infomsg;}
-        int uid = userService.findByUsername(username).getUId();
-        Map markinfo=markscore(uid, pid, kid,ansmap);
+    //    String username = tokenUtil.getusername(request);
+   //     if (username==null){
+ //           infomsg.put("code","0");
+ //           return infomsg;}
+ //       int uid = userService.findByUsername(username).getUId();
+        Map markinfo=markscore(1, pid, kid,ansmap);
         System.out.println(markinfo);
         infomsg.put("code","200");
         infomsg.put("score",markinfo);

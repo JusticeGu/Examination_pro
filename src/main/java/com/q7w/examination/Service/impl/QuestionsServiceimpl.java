@@ -20,10 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 /**
  * @author xiaogu
  * @date 2020/7/15 19:29
@@ -155,14 +153,14 @@ public class QuestionsServiceimpl implements QuestionsService {
     @Override
     public Questions getquestionbyid(int qid) {
         Questions questions=questionsDAO.findByQid(qid);
-        List list = new ArrayList();
-        list.add(questions.getOptionA());
-        list.add(questions.getOptionB());
-        list.add(questions.getOptionC());
-        list.add(questions.getOptionD());
-        list.add(questions.getOptionE());
-        list.add(questions.getOptionF());
-        questions.setOptionList(list);
+     //   List list = new ArrayList();
+  //      list.add(questions.getOptionA());
+ //       list.add(questions.getOptionB());
+  //      list.add(questions.getOptionC());
+  //      list.add(questions.getOptionD());
+//        list.add(questions.getOptionF());
+      //  list.add();
+        questions.setOptionList(Collections.emptyList());
         return questions;
     }
 
