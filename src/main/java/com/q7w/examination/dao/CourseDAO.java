@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CourseDAO extends JpaRepository<Course,Integer> {
     Course findByCid(int cid);
+    List<Course> findAllByCourseNameLike(String coursename);
 }

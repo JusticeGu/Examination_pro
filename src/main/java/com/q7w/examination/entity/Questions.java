@@ -66,6 +66,8 @@ public class Questions extends BaseEntity implements Serializable {
     private  Integer diffcult;
 //备注
     private String remarks;
+    @Transient
+    private List optionList;//问题列表后端映射
 
 
 }

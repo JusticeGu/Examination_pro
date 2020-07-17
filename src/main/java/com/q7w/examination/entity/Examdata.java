@@ -22,12 +22,13 @@ public class Examdata extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eid;
-    private int uid;
     private int kid;
     private int pid;
+    private String uno;
     private String anslist;
     private String objsinuanslist;
-    private float objscore;
+    private String wronglist;
+    private String objscore;
     private float subscore;
     private int status;//1-正在考试 2-已提交(待批阅) 3-客观题已批阅 4-主观题已批阅 5-已合成
 

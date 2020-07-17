@@ -80,7 +80,7 @@ public class ScoreUtil {
                 // 没有选答案就给零分
                 if (res != null) {
                     List<String> rightKeys = StrUtil.split(StrUtil.strip(q.getAnswer(),"[","]"), StrUtil.C_COMMA);
-                    if(rightKeys.equals(res)){
+                    if(isEquals(rightKeys,res)){
                         sum+=score;
                     } else {
                         for (String content : res) {
@@ -101,6 +101,15 @@ public class ScoreUtil {
         info.setScore(sum);
         info.setWrongIds(wrongIds);
         return info;
+    }
+    public static boolean isEquals(List<String> list1,List<String> list2){
+        if(null != list1 && null != list2){
+            if(list1.containsAll(list2) && list2.containsAll(list1)){
+                return true;
+            }
+            return false;
+        }
+        return true;
     }
     /**
      * 主观题评分

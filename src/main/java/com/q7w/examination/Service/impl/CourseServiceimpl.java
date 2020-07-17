@@ -22,6 +22,11 @@ public class CourseServiceimpl implements CourseService {
     }
 
     @Override
+    public List<Course> querycourse(String coursename) {
+        return courseDAO.findAllByCourseNameLike(coursename);
+    }
+
+    @Override
     public int addCourse(Course course) {
         Date now= new Date();
         Long createtime = now.getTime();

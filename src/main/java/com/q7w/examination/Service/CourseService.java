@@ -9,5 +9,6 @@ public interface CourseService {
     public int addCourse(Course course);
     public boolean isexist(int cid);
     public int delCourse(int cid);
+    public List<Course> querycourse(String coursename);
 
 }

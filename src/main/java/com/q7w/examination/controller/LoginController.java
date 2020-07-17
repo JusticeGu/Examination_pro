@@ -48,7 +48,8 @@ public class LoginController implements Serializable {
 
     @PostMapping("/api/register")
     @CrossOrigin
-    public ResponseData register(@RequestBody User user) {
+    public ResponseData register(@RequestBody User user,@RequestParam("code") String code) {
+        userService.checkmailcode(user.getEmail(),code);
         int status = userService.register(user);
         switch (status) {
             case 0:

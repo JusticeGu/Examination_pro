@@ -179,8 +179,6 @@ public class UserServiceimpl implements UserService {
         user.setUsername(username);
         name = HtmlUtils.htmlEscape(username);
         user.setName(name);
-        phone = HtmlUtils.htmlEscape(phone);
-        user.setPhone(phone);
         email = HtmlUtils.htmlEscape(email);
         user.setEmail(email);
         uno = HtmlUtils.htmlEscape(uno);

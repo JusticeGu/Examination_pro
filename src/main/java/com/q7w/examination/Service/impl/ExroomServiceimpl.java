@@ -2,6 +2,7 @@ package com.q7w.examination.Service.impl;
 
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
+import com.q7w.examination.Service.ExamDataService;
 import com.q7w.examination.Service.ExroomService;
 import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.Service.UserService;
@@ -26,6 +27,8 @@ public class ExroomServiceimpl implements ExroomService {
     UserService userService;
     @Autowired
     ExroomDAO exroomDAO;
+    @Autowired
+    ExamDataService examDataService;
     @Resource
     private RedisService redisService;
     /**
@@ -46,6 +49,7 @@ public class ExroomServiceimpl implements ExroomService {
         if (createtime>=exroomInDB.getDeadline()){return 2;}
         //逻辑 添加考试记录 返回试题
       //  int kno = RandomUtil.toFixdLengthString(uno+kid+RandomUtil.generateDigitalString(3), 16);
+        //examDataService.addexamdata(kid,exroomInDB.getPid(),uno);
         return 1;
     }
 

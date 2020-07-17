@@ -6,6 +6,8 @@ import com.q7w.examination.entity.Questions;
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.List;
+
 @Data
 @ToString
 public class QuestionsDTO implements OutputConverter<QuestionsDTO,Questions> {
@@ -29,6 +31,7 @@ public class QuestionsDTO implements OutputConverter<QuestionsDTO,Questions> {
     private String optionE;
     private String optionF;
 
+
     /**
      * 题目类型 1-单选 2-多选 3-填空 4-主观
      */
@@ -37,5 +40,5 @@ public class QuestionsDTO implements OutputConverter<QuestionsDTO,Questions> {
      * 所属课程
      */
     private int cid;
-
+    private List optionList;//问题列表后端映射
 }

@@ -31,6 +31,8 @@ public class PaperServiceimpl implements PaperService {
     @Autowired
     RedisService redisService;
     @Autowired
+    ExamDataService examDataService;
+    @Autowired
     PaperDAO paperDAO;
     @Autowired
     TokenUtil tokenUtil;
@@ -53,6 +55,7 @@ public class PaperServiceimpl implements PaperService {
         for (int i=0;i<=qulist.length-1;i++){
             try {
                 Questions questions = questionsService.getquestionbyid(Integer.parseInt(qulist[i]));
+               // questions.
                 questionl.add(questions);
                 String ans = questions.getAnswer();
             }catch (Exception e){
@@ -79,10 +82,11 @@ public class PaperServiceimpl implements PaperService {
 
     @Override
     public Map getPaperInfo(int pid) {
-        Map paperinfo = redisService.hmget("psh-"+pid);
-        if (paperinfo.size()!=0){ return paperinfo;}
+    //    Map paperinfo = redisService.hmget("psh-"+pid);
+      //  if (paperinfo.size()!=0){
+      //      return paperinfo;}
         Paper paper = findPaperbyid(pid);
-        //Map<String, Object> paperinfo = new HashMap();
+        Map<String, Object> paperinfo = new HashMap();
         paperinfo.put("papername", paper.getName());
         paperinfo.put("score",paper.getSinscore());
         List<Questions> questionSet = JSONObject.parseObject(paper.getQucontent(),List.class);
@@ -153,6 +157,8 @@ public class PaperServiceimpl implements PaperService {
         System.out.println(markinfo);
         infomsg.put("code","200");
         infomsg.put("score",markinfo);
+      //  examDataService.updateexamdata(kid, pid, "uid",
+          //      ansmap,markinfo.get("score").toString(),markinfo.get("wrong").toString())
         return infomsg;
     }
 
