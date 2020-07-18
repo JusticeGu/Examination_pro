@@ -99,6 +99,7 @@ public class PaperServiceimpl implements PaperService {
         Collections.shuffle(questionDTOS);
         paperinfo.put("questions",questionDTOS);
         redisService.hmset("psh-"+pid,paperinfo,3600);
+       // long time = redisService.getExpire("exroom-"+kid)
         return paperinfo;
 
     }
@@ -174,7 +175,7 @@ public class PaperServiceimpl implements PaperService {
     @Override
     public Map<String, Object> markscore(int uid, int pid, int kid, Map ansmap) {
         long startTime=System.nanoTime();
-        System.out.println("执行代码块/方法");
+        System.out.println("执行代码块/计算分数方法");
         //获取试卷信息
         Paper paper = findPaperbyid(pid);
         // 获取模板各个题型的题目分值

@@ -38,7 +38,6 @@ public class ExroomServiceimpl implements ExroomService {
      */
     @Override
     public int enterExroom(int kid) {
-
         String username = userService.getusernamebysu();
         if(username==null){return 3;}
         Exroom exroomInDB = findExroom(kid);
@@ -47,6 +46,11 @@ public class ExroomServiceimpl implements ExroomService {
         Date now= new Date();
         Long createtime = now.getTime();
         if (createtime>=exroomInDB.getDeadline()){return 2;}
+        //向redis中写考场信息
+     //   if(!redisService.hasKey("exroom-"+kid)){
+    //        redisService.set("exroom-"+kid, "true",
+       //             exroomInDB.getStarttime()+exroomInDB.getTime()-createtime);
+      //  }
         //逻辑 添加考试记录 返回试题
       //  int kno = RandomUtil.toFixdLengthString(uno+kid+RandomUtil.generateDigitalString(3), 16);
         //examDataService.addexamdata(kid,exroomInDB.getPid(),uno);

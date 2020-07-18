@@ -8,6 +8,8 @@ import com.q7w.examination.entity.Questions;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,7 @@ import java.util.*;
 public class PaperController {
     @Autowired
     PaperService paperService;
+
 
     @GetMapping("/getpaperquestion")
     @CrossOrigin
@@ -56,6 +59,11 @@ public class PaperController {
     @PostMapping("/{kid}/{pid}/submit")
     @CrossOrigin
     @ApiOperation("提交答案数据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "考场id", value = "kid", defaultValue = "1", required = true),
+            @ApiImplicitParam(name = "试卷id", value = "pid", defaultValue = "1", required = true),
+            @ApiImplicitParam(name = "答案列表", value = "map", defaultValue = "[]", required = true),
+    })
     public ResponseData getpaperinfo(@PathVariable("kid") int kid,@PathVariable("pid") int pid
            ,HttpServletRequest request,@RequestBody Map map){
         Map status = paperService.submitpaper(kid,pid,request,map);
