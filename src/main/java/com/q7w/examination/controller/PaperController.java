@@ -1,8 +1,7 @@
 package com.q7w.examination.controller;
 
 import com.q7w.examination.Service.PaperService;
-import com.q7w.examination.dto.QuestionsDTO;
-import com.q7w.examination.entity.Exroom;
+import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.entity.Paper;
 import com.q7w.examination.entity.Questions;
 import com.q7w.examination.result.ExceptionMsg;
@@ -12,6 +11,10 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,15 +29,33 @@ import java.util.*;
 public class PaperController {
     @Autowired
     PaperService paperService;
-
-
+    @Autowired
+    RedisService redisService;
+    @GetMapping("/queryPaper")
+    @ApiOperation("试卷模糊查询")
+    public ResponseData querycourse(String papername){
+        if (papername.length()>=10||papername.length()<=3){return new ResponseData(ExceptionMsg.FAILED_F,"请不要输入过长或过短的内容");}
+        //逻辑
+        return new ResponseData(ExceptionMsg.SUCCESS,paperService.querypaper("%"+papername+"%"));
+    }
+    @GetMapping("/list")
+    @ApiOperation("试卷列表(分页)")
+    public ResponseData listroombunum(@RequestParam(value = "start",defaultValue = "0")Integer start,
+                                      @RequestParam(value = "num",defaultValue = "10")Integer num)
+    {
+        start = start<0?0:start;
+        Sort sort = Sort.by(Sort.Direction.DESC, "qid");
+        Pageable pageable = PageRequest.of(start, num, sort);
+        Page<Paper> page = paperService.listpapersbynum(pageable);
+        return new ResponseData(ExceptionMsg.SUCCESS,page);
+    }
     @GetMapping("/getpaperquestion")
     @CrossOrigin
-    @ApiOperation("获取考卷数据教师端")
+    @ApiOperation("获取试卷试题数据教师端")
     public ResponseData getpaperque(int pid){
         if (!paperService.isExist(pid)){
             return new ResponseData(ExceptionMsg.FAILED,"试卷不存在，请重新尝试"); }
-        List<Questions> questionsSet = paperService.getPaperList(pid);
+        List<Questions> questionsSet = paperService.getPaperQuestionList(pid);
         if(!questionsSet.isEmpty()){
         return new ResponseData(ExceptionMsg.SUCCESS,questionsSet);
         }
@@ -66,6 +87,8 @@ public class PaperController {
     })
     public ResponseData getpaperinfo(@PathVariable("kid") int kid,@PathVariable("pid") int pid
            ,HttpServletRequest request,@RequestBody Map map){
+        if (!redisService.hasKey("exroom-"+kid)){
+            return new ResponseData(ExceptionMsg.FAILED,"考试截止时间已过，现在已停止提交"); }
         Map status = paperService.submitpaper(kid,pid,request,map);
         switch (status.get("code").toString()) {
             case "0":

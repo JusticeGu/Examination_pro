@@ -37,6 +37,8 @@ public class Paper extends BaseEntity implements Serializable {
     private List<Map<String,Object>> paperQuestions;//前端显示
     @Transient
     private List<Questions> questionsList;//问题列表后端映射
+    @Transient
+    private List<Integer> qidList;//题号后端映射
 
 
 }

@@ -15,9 +15,12 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -41,7 +44,18 @@ public class ExroomController implements Serializable {
     @ApiOperation("全部考试(场)列表")
     public ResponseData listroom(){
         //逻辑
-        return new ResponseData(ExceptionMsg.SUCCESS,"0");
+        return new ResponseData(ExceptionMsg.SUCCESS,exroomService.listExroom());
+    }
+    @GetMapping("/listnum")
+    @ApiOperation("全部考试(场)列表(分页)")
+    public ResponseData listroombunum(@RequestParam(value = "start",defaultValue = "0")Integer start,
+                                      @RequestParam(value = "num",defaultValue = "10")Integer num)
+    {
+        start = start<0?0:start;
+        Sort sort = Sort.by(Sort.Direction.DESC, "kid");
+        Pageable pageable = PageRequest.of(start, num, sort);
+        Page<Exroom> page = exroomService.listexroombynum(pageable);
+        return new ResponseData(ExceptionMsg.SUCCESS,page);
     }
     @GetMapping("/getlist")
     @ApiOperation("待开考考试(场)列表")
@@ -68,12 +82,13 @@ public class ExroomController implements Serializable {
     }
     @PostMapping("/{kid}/{pid}/submit")
     @CrossOrigin
-    @ApiOperation("考场添加单个考生许可")
+    @ApiOperation("提交试卷")
 
     public ResponseData submitdata(@PathVariable("kid") int kid, @PathVariable("pid") int pid
             , HttpServletRequest request, @RequestBody Map map){
         Map status = paperService.submitpaper(kid,pid,request,map);
-        if (!redisService.hasKey("exroom-"+kid)){return new ResponseData(ExceptionMsg.FAILED,"考试截止时间已过，现在已停止提交"); }
+        if (!redisService.hasKey("exroom-"+kid)){
+            return new ResponseData(ExceptionMsg.FAILED,"考试截止时间已过，现在已停止提交"); }
         switch (status.get("code").toString()) {
             case "0":
                 return new ResponseData(ExceptionMsg.FAILED,"登录信息获取失败，请重试或联系管理员，严禁使用" +

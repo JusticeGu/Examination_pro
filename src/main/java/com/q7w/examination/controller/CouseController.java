@@ -28,7 +28,7 @@ public class CouseController {
         return new ResponseData(ExceptionMsg.SUCCESS,courseService.list());
     }
     @GetMapping("/queryCourse")
-    @ApiOperation("课程列表")
+    @ApiOperation("课程模糊查询")
     public ResponseData querycourse(String coursename){
         if (coursename.length()>=10||coursename.length()<=3){return new ResponseData(ExceptionMsg.FAILED_F,"请不要输入过长或过短的内容");}
         //逻辑

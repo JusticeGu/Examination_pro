@@ -11,10 +11,12 @@ import com.q7w.examination.entity.ExamSession;
 import com.q7w.examination.entity.Exroom;
 import com.q7w.examination.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import org.springframework.data.domain.Pageable;
 import java.io.File;
 import java.util.*;
 /**
@@ -68,6 +70,10 @@ public class ExroomServiceimpl implements ExroomService {
     }
 
 
+    @Override
+    public Page<Exroom> listexroombynum(Pageable pageable) {
+        return exroomDAO.findAll(pageable);
+    }
 
     @Override
     public List<String> stringToList(String strs){
@@ -96,7 +102,8 @@ public class ExroomServiceimpl implements ExroomService {
         Long createtime = now.getTime();
         exroom.setCreateTime(createtime);
         exroom.setUpdateTime(createtime);
-        exroom.setCreateBy(userService.getusernamebysu());
+    //    exroom.setCreateBy(userService.getusernamebysu());
+        exroom.setCreateBy("sys");
         try{
             exroomDAO.save(exroom);
             return 1;

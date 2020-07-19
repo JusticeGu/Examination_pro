@@ -16,6 +16,8 @@ import com.q7w.examination.entity.Paper;
 import com.q7w.examination.entity.Questions;
 import com.q7w.examination.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -172,6 +174,17 @@ public class QuestionsServiceimpl implements QuestionsService {
       //  list.add();
         questions.setOptionList(Collections.emptyList());
         return questions;
+    }
+
+    @Override
+    public List<Questions> listallbyidset(List<Integer> qidset) {
+        List<Questions> questionsList = questionsDAO.findAllById(qidset);
+        return questionsList;
+    }
+
+    @Override
+    public Page<Questions> listqusetionbynum(Pageable pageable) {
+        return questionsDAO.findAll(pageable);
     }
 
     @Override

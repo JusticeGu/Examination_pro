@@ -5,12 +5,18 @@ import com.alibaba.fastjson.JSONObject;
 import com.q7w.examination.Service.*;
 import com.q7w.examination.dao.PaperDAO;
 import com.q7w.examination.dto.AnsmarkDTO;
+import com.q7w.examination.dto.PaperDTO;
 import com.q7w.examination.dto.QuestionsDTO;
+import com.q7w.examination.dto.UserDTO;
 import com.q7w.examination.entity.Paper;
 import com.q7w.examination.entity.Questions;
+import com.q7w.examination.entity.Uesr.AdminRole;
+import com.q7w.examination.entity.User;
 import com.q7w.examination.util.ScoreUtil;
 import com.q7w.examination.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,6 +56,10 @@ public class PaperServiceimpl implements PaperService {
         paper.setCreateTime(createtime);
         paper.setUpdateTime(createtime);
         paper.setCreateBy("user");
+        //-------获取题目列表方法一
+      //  List<Integer> qnumlist = paper.getQidList();
+        //List<Questions> questionsList = questionsService.listallbyidset(qnumlist);
+        //-------获取题目列表方法二
         String[] qulist = paper.getQuestionId().split(",");
         List<Questions> questionl = new ArrayList<>();
         for (int i=0;i<=qulist.length-1;i++){
@@ -72,13 +82,24 @@ public class PaperServiceimpl implements PaperService {
     }
 
     @Override
-    public List<Questions> getPaperList(int pid) {
+    public List<Questions> getPaperQuestionList(int pid) {
         Paper paper = findPaperbyid(pid);
         List<Questions> questionSet = JSONObject.parseObject(paper.getQucontent(),List.class);
 
         return questionSet;
     }
 
+    @Override
+    public Page<Paper> listpapersbynum(Pageable pageable) {
+        return paperDAO.findAll(pageable);
+    }
+
+    @Override
+    public List<PaperDTO> querypaper(String name) {
+        List<Paper> papers =  paperDAO.findAllByNameLike(name);
+        List<PaperDTO> paperDTOS = papers.stream().map(paper -> (PaperDTO) new PaperDTO().convertFrom(paper)).collect(Collectors.toList());
+        return paperDTOS;
+    }
 
     @Override
     public Map getPaperInfo(int pid) {
