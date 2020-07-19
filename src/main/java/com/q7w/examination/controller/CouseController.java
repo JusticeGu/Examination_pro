@@ -28,7 +28,7 @@ public class CouseController {
         return new ResponseData(ExceptionMsg.SUCCESS,courseService.list());
     }
     @GetMapping("/queryCourse")
-    @ApiOperation("课程列表")
+    @ApiOperation("课程模糊查询")
     public ResponseData querycourse(String coursename){
         if (coursename.length()>=10||coursename.length()<=3){return new ResponseData(ExceptionMsg.FAILED_F,"请不要输入过长或过短的内容");}
         //逻辑
@@ -46,7 +46,7 @@ public class CouseController {
             case 3:
                 return new ResponseData(ExceptionMsg.FAILED_F,"参数非法，请从正规接口操作或联系管理员");
         }
-        return new ResponseData(ExceptionMsg.FAILED,"后端错误");
+        return new ResponseData(ExceptionMsg.FAILED,"后端村务");
     }
     @DeleteMapping("/delcourse")
     @CrossOrigin

@@ -3,6 +3,7 @@ package com.q7w.examination.controller;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import com.q7w.examination.Service.ExroomService;
+import com.q7w.examination.Service.PaperService;
 import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.entity.Exroom;
 import com.q7w.examination.entity.User;
@@ -14,10 +15,14 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
@@ -33,11 +38,24 @@ public class ExroomController implements Serializable {
     private RedisService redisService;
     @Autowired
     ExroomService exroomService;
+    @Autowired
+    PaperService paperService;
     @GetMapping("/list")
     @ApiOperation("全部考试(场)列表")
     public ResponseData listroom(){
         //逻辑
-        return new ResponseData(ExceptionMsg.SUCCESS,"0");
+        return new ResponseData(ExceptionMsg.SUCCESS,exroomService.listExroom());
+    }
+    @GetMapping("/listnum")
+    @ApiOperation("全部考试(场)列表(分页)")
+    public ResponseData listroombunum(@RequestParam(value = "start",defaultValue = "0")Integer start,
+                                      @RequestParam(value = "num",defaultValue = "10")Integer num)
+    {
+        start = start<0?0:start;
+        Sort sort = Sort.by(Sort.Direction.DESC, "kid");
+        Pageable pageable = PageRequest.of(start, num, sort);
+        Page<Exroom> page = exroomService.listexroombynum(pageable);
+        return new ResponseData(ExceptionMsg.SUCCESS,page);
     }
     @GetMapping("/getlist")
     @ApiOperation("待开考考试(场)列表")
@@ -59,6 +77,27 @@ public class ExroomController implements Serializable {
                 return new ResponseData(ExceptionMsg.FAILED,"现在不在考场允许进入的时间范围");
             case 3:
                 return new ResponseData(ExceptionMsg.FAILED,"您不在本考场的参考范围，或考试暂未开始，请联系老师添加或等待老师开始考试");
+        }
+        return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
+    }
+    @PostMapping("/{kid}/{pid}/submit")
+    @CrossOrigin
+    @ApiOperation("提交试卷")
+
+    public ResponseData submitdata(@PathVariable("kid") int kid, @PathVariable("pid") int pid
+            , HttpServletRequest request, @RequestBody Map map){
+        Map status = paperService.submitpaper(kid,pid,request,map);
+        if (!redisService.hasKey("exroom-"+kid)){
+            return new ResponseData(ExceptionMsg.FAILED,"考试截止时间已过，现在已停止提交"); }
+        switch (status.get("code").toString()) {
+            case "0":
+                return new ResponseData(ExceptionMsg.FAILED,"登录信息获取失败，请重试或联系管理员，严禁使用" +
+                        "第三方工具进行提交");
+            case "200":
+                return new ResponseData(ExceptionMsg.SUCCESS_ER,"提交成功，你的成绩信息为" +
+                        status);
+            case "2":
+                return new ResponseData(ExceptionMsg.FAILED,"提交失败，请检查数据");
         }
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
     }

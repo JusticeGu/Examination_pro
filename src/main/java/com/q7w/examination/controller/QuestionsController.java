@@ -1,26 +1,21 @@
 package com.q7w.examination.controller;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.hutool.poi.excel.ExcelReader;
-import cn.hutool.poi.excel.ExcelUtil;
 import com.q7w.examination.Service.QuestionsService;
 import com.q7w.examination.entity.Questions;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
-import com.q7w.examination.util.FileUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 /**
  * @author xiaogu
  * @date 2020/7/15 19:29
@@ -42,6 +37,17 @@ public class QuestionsController {
     @ApiOperation("获取指定类型所有问题")
     public ResponseData gettypeList(int type){
         return new ResponseData(ExceptionMsg.SUCCESS,questionsService.listbytype(type));
+    }
+    @GetMapping("/listnum")
+    @ApiOperation("问题列表(分页)")
+    public ResponseData listroombunum(@RequestParam(value = "start",defaultValue = "0")Integer start,
+                                      @RequestParam(value = "num",defaultValue = "10")Integer num)
+    {
+        start = start<0?0:start;
+        Sort sort = Sort.by(Sort.Direction.DESC, "qid");
+        Pageable pageable = PageRequest.of(start, num, sort);
+        Page<Questions> page = questionsService.listqusetionbynum(pageable);
+        return new ResponseData(ExceptionMsg.SUCCESS,page);
     }
     @GetMapping("/getlistbycid")
     @ApiOperation("根据课程代码获取问题")

@@ -16,6 +16,8 @@ import com.q7w.examination.entity.Paper;
 import com.q7w.examination.entity.Questions;
 import com.q7w.examination.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -111,24 +113,34 @@ public class QuestionsServiceimpl implements QuestionsService {
             if (!multipartFile.isEmpty()) {
                 file.deleteOnExit();
             }
-
             for (Map<String,Object> question : questions) {
                 // 正确答案、难度、所属课程、类型 ID 检测
-
                 // 同步导入
                 synchronized (this) {
 
                     Questions newquestions = new Questions();
                     newquestions.setAnswer(question.get("答案").toString());
+                    newquestions.setCid(Integer.parseInt(question.get("所属课程代码").toString()));
+                    newquestions.setRemarks(question.get("备注").toString());
+                    newquestions.setQuestionName(question.get("问题主体").toString());
+                    newquestions.setType(Integer.parseInt(String.valueOf(question.get("问题类型"))));
+                    newquestions.setContext(question.get("解析").toString());
+                    newquestions.setOptionA(question.get("选项A").toString());
+                    newquestions.setOptionB(question.get("选项B").toString());
+                    newquestions.setOptionC(question.get("选项C").toString());
+                    newquestions.setOptionD(question.get("选项D").toString());
+                    newquestions.setOptionE(question.get("选项E").toString());
+                    newquestions.setOptionF(question.get("选项F").toString());
+                   // newquestions.setDiffcult(Integer.parseInt(question.get("难度").toString()));
                         // 插入题目数据
                       //  this.questionsDAO.save(newquestions);
-                    System.out.println(question.get("问题主体"));
-
+                    System.out.println(newquestions.toString());
                 }
             }
         } catch (Exception e) {
             // 捕捉所有可能发生的异常，抛出给控制层处理
            // log.error(ExceptionUtil.stacktraceToString(e));
+            System.out.println(e.toString());
             return 2;
         }
         return 1;
@@ -162,6 +174,17 @@ public class QuestionsServiceimpl implements QuestionsService {
       //  list.add();
         questions.setOptionList(Collections.emptyList());
         return questions;
+    }
+
+    @Override
+    public List<Questions> listallbyidset(List<Integer> qidset) {
+        List<Questions> questionsList = questionsDAO.findAllById(qidset);
+        return questionsList;
+    }
+
+    @Override
+    public Page<Questions> listqusetionbynum(Pageable pageable) {
+        return questionsDAO.findAll(pageable);
     }
 
     @Override

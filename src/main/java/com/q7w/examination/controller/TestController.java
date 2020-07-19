@@ -16,11 +16,9 @@ import com.q7w.examination.util.FileUtil;
 import com.q7w.examination.util.JwtUtils;
 import com.q7w.examination.util.TokenUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -87,7 +85,8 @@ public class TestController implements Serializable {
         map.put("subject", title);
         queueSender.send(map);
         return new ResponseData(ExceptionMsg.SUCCESS,"发送成功");
-    }@RequestMapping(value="/test/stringtest",method = RequestMethod.POST)
+    }
+    @RequestMapping(value="/test/stringtest",method = RequestMethod.POST)
     @CrossOrigin
     public ResponseData stringtest(String to){
         Questions qu1 = new Questions();
@@ -107,6 +106,13 @@ public class TestController implements Serializable {
      
        // queueSender.send(map);
         return new ResponseData(ExceptionMsg.SUCCESS,map);
+    }
+    @PostMapping(value = "/testreceive")
+    @CrossOrigin
+    @ApiOperation("前端POST请求测试")
+    public ResponseData testpost(@RequestBody Object str) {
+        Object content = str;
+        return new ResponseData(ExceptionMsg.SUCCESS,content);
     }
 
 

@@ -3,6 +3,8 @@ package com.q7w.examination.Service;
 import com.q7w.examination.entity.ExamSession;
 import com.q7w.examination.entity.Exroom;
 import com.q7w.examination.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,6 +13,7 @@ import java.util.Map;
 
 public interface ExroomService {
     public List<Exroom> listExroom();
+    public Page<Exroom> listexroombynum(Pageable pageable);
     public int addExroom(Exroom exroom);
     public int modifyExroom(Exroom exroom);
     public int delExroom(int kid);

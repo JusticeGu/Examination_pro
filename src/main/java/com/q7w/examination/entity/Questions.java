@@ -60,6 +60,7 @@ public class Questions extends BaseEntity implements Serializable {
      * 所属课程
      */
     private int cid;
+
     /**
      * 难度
      */
@@ -68,6 +69,7 @@ public class Questions extends BaseEntity implements Serializable {
     private String remarks;
     @Transient
     private List optionList;//问题列表后端映射
+
 
 
 }
