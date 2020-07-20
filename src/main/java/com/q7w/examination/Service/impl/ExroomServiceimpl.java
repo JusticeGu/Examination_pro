@@ -10,10 +10,14 @@ import com.q7w.examination.dao.ExroomDAO;
 import com.q7w.examination.entity.ExamSession;
 import com.q7w.examination.entity.Exroom;
 import com.q7w.examination.util.FileUtil;
+import com.q7w.examination.util.UpdateUtil;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import javax.annotation.Resource;
 import org.springframework.data.domain.Pageable;
@@ -123,7 +127,28 @@ public class ExroomServiceimpl implements ExroomService {
 
     @Override
     public int modifyExroom(Exroom exroom) {
-        return 0;
+        Date now= new Date();
+        Long updateTime = now.getTime();
+        exroom.setUpdateTime(updateTime);
+        int id = exroom.getKid();
+        ExroomDAO oldExroom = (ExroomDAO) exroomDAO.findByKid(id);
+        if(!StringUtils.isEmpty(oldExroom)){
+            UpdateUtil.copyNullProperties(exroom,oldExroom);
+        }
+        try{
+            List<Exroom> exrooms = exroomDAO.findAll();
+            for(int i=0; i<exrooms.size(); i++){
+                if(exroom.getKid() != exrooms.get(i).getKid()) {
+                    if (exroom.getName().equals(exrooms.get(i).getName())) {
+                        return 0;
+                    }
+                }
+            }
+            exroomDAO.save(exroom);
+            return 1;
+        }catch (IllegalArgumentException e){
+            return 2;
+        }
     }
 
     @Override
