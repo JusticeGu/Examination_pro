@@ -24,11 +24,12 @@ public class Examdata extends BaseEntity implements Serializable {
     private int eid;
     private int kid;
     private int pid;
+    private int times;
     private String uno;
     private String anslist;
     private String objsinuanslist;
     private String wronglist;
-    private String objscore;
+    private String objscore;//分数
     private float subscore;
     private int status;//1-正在考试 2-已提交(待批阅) 3-客观题已批阅 4-主观题已批阅 5-已合成
 

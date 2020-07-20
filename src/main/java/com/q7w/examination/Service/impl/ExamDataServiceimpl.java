@@ -20,11 +20,15 @@ public class ExamDataServiceimpl implements ExamDataService {
     @Autowired
     ExamdataDAO examdataDAO;
     @Override
-    public int addexamdata(int kid,int pid,String uno) {
-        Examdata examdata = new Examdata();
-        examdata.setKid(kid);
-        examdata.setPid(pid);
-        examdata.setUno(uno);
+    public int addexamdata(int kid,int pid,String uno,int ltimes) {
+        Examdata examdata = getexam(kid, pid, uno);
+        int times = examdata.getTimes();
+        if (times>ltimes&&ltimes!=0){return -1;}
+        if (times!=1){
+            examdata.setTimes(times+1);
+        }else {
+            examdata.setTimes(1);
+        }
         Date now= new Date();
         Long createtime = now.getTime();
         examdata.setCreateTime(createtime);
@@ -36,6 +40,17 @@ public class ExamDataServiceimpl implements ExamDataService {
         }
 
     }
+
+    @Override
+    public Examdata getexam(int kid,int pid,String uno) {
+        Examdata examdata = examdataDAO.findByKidAndPidAndUno(kid, pid, uno);
+        if(examdata==null){return new Examdata();}
+        else {
+            return examdata;
+        }
+    }
+
+
 
     @Override
     public int updateexamdata(int kid, int pid, String uno, Map ans, String score, String wronglist) {

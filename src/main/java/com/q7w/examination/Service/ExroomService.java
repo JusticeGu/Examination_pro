@@ -20,7 +20,7 @@ public interface ExroomService {
     public Exroom findExroom(int kid);
     public boolean isExist(int kid);
     public List<Map<String, Object>> getExroomList();
-    public int enterExroom(int kid);
+    public Map enterExroom(int kid);
     public List<String> stringToList(String strs);
     public int submitexam(ExamSession examSession);
     public boolean putpermission(String exid,String uno);

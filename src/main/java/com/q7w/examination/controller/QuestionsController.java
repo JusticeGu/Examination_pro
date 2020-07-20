@@ -73,21 +73,7 @@ public class QuestionsController {
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
 
     }
-    @PutMapping("/putquestion")
-    @ApiOperation("修改问题信息")
-    public ResponseData modifyquestion(@RequestBody Questions questions){
-        int ans= questionsService.modifyquestion(questions);
-        switch (ans){
-            case 1:
-                return new ResponseData(ExceptionMsg.SUCCESS,"题目修改成功，请勿重复操作");
-            case 2:
-                return new ResponseData(ExceptionMsg.FAILED,"修改失败");
-            case 3:
-                return new ResponseData(ExceptionMsg.FAILED_F,"参数非法，请从正规接口操作或联系管理员");
-        }
-        return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
 
-    }
     @RequestMapping(value="/uploadquestion",method = RequestMethod.POST)
     @CrossOrigin
     @ApiOperation("上传问题excel")

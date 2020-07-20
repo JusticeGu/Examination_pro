@@ -67,16 +67,18 @@ public class ExroomController implements Serializable {
     @CrossOrigin
     @ApiOperation("进入考试(场)")
     public ResponseData enterexroom(@RequestBody Exroom exroom) {
-        int status = exroomService.enterExroom(exroom.getKid());
-        switch (status) {
-            case 0:
+        Map status = exroomService.enterExroom(exroom.getKid());
+        switch (status.get("code").toString()) {
+            case "0":
                 return new ResponseData(ExceptionMsg.FAILED,"考场不存在请重试");
-            case 1:
-                return new ResponseData(ExceptionMsg.SUCCESS_ER,"您已进入考场，请等待系统抽取试卷");
-            case 2:
+            case "1":
+                return new ResponseData(ExceptionMsg.SUCCESS_ER,status.get("expiretime"));
+            case "2":
                 return new ResponseData(ExceptionMsg.FAILED,"现在不在考场允许进入的时间范围");
-            case 3:
+            case "3":
                 return new ResponseData(ExceptionMsg.FAILED,"您不在本考场的参考范围，或考试暂未开始，请联系老师添加或等待老师开始考试");
+            case "4":
+                return new ResponseData(ExceptionMsg.FAILED,"您已参加过次考试且次数超过允许考试次数上限");
         }
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
     }

@@ -44,7 +44,7 @@ public class PaperController {
                                       @RequestParam(value = "num",defaultValue = "10")Integer num)
     {
         start = start<0?0:start;
-        Sort sort = Sort.by(Sort.Direction.DESC, "qid");
+        Sort sort = Sort.by(Sort.Direction.DESC, "pid");
         Pageable pageable = PageRequest.of(start, num, sort);
         Page<Paper> page = paperService.listpapersbynum(pageable);
         return new ResponseData(ExceptionMsg.SUCCESS,page);

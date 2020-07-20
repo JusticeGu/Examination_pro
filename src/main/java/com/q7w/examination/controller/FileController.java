@@ -6,9 +6,7 @@ import com.q7w.examination.result.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
@@ -23,14 +21,14 @@ import java.util.Set;
 public class FileController {
     @Autowired
     FileService fileService;
-    @GetMapping("/uploadfile")
-    @ApiOperation("OSS文件上传接口")
-    public ResponseData ossuoload(MultipartFile multipartFile){
+    @ResponseBody
+    @RequestMapping(value = "/fileupload", method = RequestMethod.POST)
+    public ResponseData ossuoload(MultipartFile file){
         //判断图片是否为空
-        if (multipartFile.isEmpty()) {
+        if (file.isEmpty()) {
             return new ResponseData(ExceptionMsg.FAILED_F,"文件数据为null");
         }
-        String ans = fileService.fileupload(multipartFile);
+        String ans = fileService.fileupload(file);
         switch (ans) {
             case "filenull":
                 return new ResponseData(ExceptionMsg.FAILED_F,"文件数据为null");

@@ -39,24 +39,36 @@ public class ExroomServiceimpl implements ExroomService {
      * @return 0-考场不存在 1-成功 2-不在时间范围 3-用户不在允许范围
      */
     @Override
-    public int enterExroom(int kid) {
+    public Map enterExroom(int kid) {
+        Map ansmap = new HashMap();
         String username = userService.getusernamebysu();
-        if(username==null){return 3;}
+        if(username==null){
+            ansmap.put("code","3");
+            return ansmap;}//未登录或鸡贼登录拦截
         Exroom exroomInDB = findExroom(kid);
         String uno = userService.usernametouno(username);
-        if((!checkpermission(String.valueOf(kid),uno))&&exroomInDB.getGrouptype()==1){return 3;}
+        if((!checkpermission(String.valueOf(kid),uno))&&exroomInDB.getGrouptype()==1){  ansmap.put("code","3");
+            return ansmap;}//不在考场接受范围拦截
+        //     int ans = examDataService.addexamdata(kid,exroomInDB.getPid(),uno,exroomInDB.getAllowtimes());
+        //      if (ans==-1||ans==2){  ansmap.put("code","4");
+        //            return ansmap;}
+
         Date now= new Date();
         Long createtime = now.getTime();
-        if (createtime>=exroomInDB.getDeadline()){return 2;}
-        //向redis中写考场信息
+        if (createtime>=exroomInDB.getDeadline()){ansmap.put("code","2");
+            return ansmap;}//截止时间后进入拦截
+        //第一位进入考场的考生向redis中写考场信息，用于后期提交校验时间
      //   if(!redisService.hasKey("exroom-"+kid)){
-    //        redisService.set("exroom-"+kid, "true",
-       //             exroomInDB.getStarttime()+exroomInDB.getTime()-createtime);
+           //  long time = (exroomInDB.getStarttime()+exroomInDB.getTime()*60*1000-createtime)/1000;
+    //        redisService.set("exroom-"+kid, "true",time);
       //  }
         //逻辑 添加考试记录 返回试题
       //  int kno = RandomUtil.toFixdLengthString(uno+kid+RandomUtil.generateDigitalString(3), 16);
-        //examDataService.addexamdata(kid,exroomInDB.getPid(),uno);
-        return 1;
+
+
+        ansmap.put("code","3");
+      //  ansmap.put("expiretime",redisService.getExpire("exroom-"+kid))
+        return ansmap;
     }
 
     @Override

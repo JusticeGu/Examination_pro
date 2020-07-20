@@ -169,6 +169,7 @@ public class PaperServiceimpl implements PaperService {
 
     @Override
     public Map submitpaper(int kid,int pid, HttpServletRequest request,Map ansmap) {
+
         Map infomsg = new HashMap();
     //    String username = tokenUtil.getusername(request);
    //     if (username==null){
@@ -177,10 +178,12 @@ public class PaperServiceimpl implements PaperService {
  //       int uid = userService.findByUsername(username).getUId();
         Map markinfo=markscore(1, pid, kid,ansmap);
         System.out.println(markinfo);
+        // int ans =  examDataService.updateexamdata(kid, pid, "uid",
+        //      ansmap,markinfo.get("score").toString(),markinfo.get("wrong").toString())
+    //    if(ans==-1){infomsg.put("code","200");return infomsg;}
         infomsg.put("code","200");
         infomsg.put("score",markinfo);
-      //  examDataService.updateexamdata(kid, pid, "uid",
-          //      ansmap,markinfo.get("score").toString(),markinfo.get("wrong").toString())
+
         return infomsg;
     }
 
