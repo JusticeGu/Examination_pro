@@ -9,6 +9,7 @@ public enum ExceptionMsg {
     SUCCESS_GETR("200","数据获取成功-Redis"),
     SUCCESS_WXBIND("200","微信绑定成功"),
     SUCCESS_ER("200","进入考场成功"),
+    SUCCESS_SUBMIT("200","您已成功参加考试，试卷已提交成功"),
     FAILED("801","操作失败"),
     FAILED_F("802","表单内容非法"),
     FAILED_V("803","验证失败"),

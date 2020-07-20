@@ -95,10 +95,12 @@ public class PaperController {
                 return new ResponseData(ExceptionMsg.FAILED,"登录信息获取失败，请重试或联系管理员，严禁使用" +
                         "第三方工具进行提交");
             case "200":
-                return new ResponseData(ExceptionMsg.SUCCESS_ER,"提交成功，你的成绩信息为" +
+                return new ResponseData(ExceptionMsg.SUCCESS_SUBMIT,"提交成功，你的成绩信息为" +
                         status);
             case "2":
                 return new ResponseData(ExceptionMsg.FAILED,"提交失败，请检查数据");
+            case "801":
+                return new ResponseData(ExceptionMsg.FAILED,"您的考试信息存在问题、请不要通过非官方渠道参加考试");
         }
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
     }

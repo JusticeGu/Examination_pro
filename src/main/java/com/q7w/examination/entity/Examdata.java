@@ -32,5 +32,6 @@ public class Examdata extends BaseEntity implements Serializable {
     private String objscore;//分数
     private float subscore;
     private int status;//1-正在考试 2-已提交(待批阅) 3-客观题已批阅 4-主观题已批阅 5-已合成
+    private String remark;//备注
 
 }

@@ -25,5 +25,5 @@ public interface PaperService {
     public List<Questions> getPaperQuestionList(int pid);
     public Map submitpaper(int kid,int pid,HttpServletRequest request,Map ansmap);
     public List<String> stringToList(String strs);
-    public Map<String, Object> markscore(int uid, int pid, int kid, Map ansmap);//阅卷服务
+    public Map<String, Object> markscore( int pid, Map ansmap);//阅卷服务
 }

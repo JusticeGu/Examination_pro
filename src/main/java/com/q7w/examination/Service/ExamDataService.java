@@ -13,7 +13,7 @@ public interface ExamDataService {
     public int addexamdata(int kid,int pid,String uno,int ltimes);
     public Examdata getexam(int kid,int pid,String uno);
     public boolean delexamdata(int eid);
-    public int updateexamdata(int kid, int pid, String uno, Map ans,String score,String wronglist);
+    public int updateexamdata(int kid, int pid, String uno, Map ans,float score,String wronglist);
     public int modifydata(Examdata examdata);
     public List<Examdata> querydatabyuno(String uno);
     public List<Examdata>  querydatabykid(int kid);
