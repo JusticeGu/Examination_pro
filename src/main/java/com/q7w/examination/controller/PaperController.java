@@ -67,6 +67,7 @@ public class PaperController {
     @CrossOrigin
     @ApiOperation("获取考卷数据考生端")
     public ResponseData getpaperinfo(int pid){
+
         if (!paperService.isExist(pid)){
             return new ResponseData(ExceptionMsg.FAILED,"试卷不存在，请重新尝试"); }
         Map questionsSet = paperService.getPaperInfo(pid);
@@ -85,24 +86,24 @@ public class PaperController {
             @ApiImplicitParam(name = "试卷id", value = "pid", defaultValue = "1", required = true),
             @ApiImplicitParam(name = "答案列表", value = "map", defaultValue = "[]", required = true),
     })
-    public ResponseData getpaperinfo(@PathVariable("kid") int kid,@PathVariable("pid") int pid
+    public ResponseData postpaper(@PathVariable("kid") int kid,@PathVariable("pid") int pid
            ,HttpServletRequest request,@RequestBody Map map){
         if (!redisService.hasKey("exroom-"+kid)){
-            return new ResponseData(ExceptionMsg.FAILED,"考试截止时间已过，现在已停止提交"); }
+            return new ResponseData(ExceptionMsg.FAILED_SUB,"考试提交截止时间已过，现在已停止回收试卷,相关事宜请联系负责老师"); }
         Map status = paperService.submitpaper(kid,pid,request,map);
         switch (status.get("code").toString()) {
             case "0":
-                return new ResponseData(ExceptionMsg.FAILED,"登录信息获取失败，请重试或联系管理员，严禁使用" +
+                return new ResponseData(ExceptionMsg.FAILED_SUB,"登录信息获取失败，请重试或联系管理员，严禁使用" +
                         "第三方工具进行提交");
             case "200":
                 return new ResponseData(ExceptionMsg.SUCCESS_SUBMIT,"提交成功，你的成绩信息为" +
                         status);
             case "2":
-                return new ResponseData(ExceptionMsg.FAILED,"提交失败，请检查数据");
+                return new ResponseData(ExceptionMsg.FAILED_SUB,"提交失败，请检查数据");
             case "801":
-                return new ResponseData(ExceptionMsg.FAILED,"您的考试信息存在问题、请不要通过非官方渠道参加考试");
+                return new ResponseData(ExceptionMsg.FAILED_SUB,"您的考试信息存在问题、请不要通过非官方渠道参加考试");
         }
-        return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
+        return new ResponseData(ExceptionMsg.FAILED_SUB,"后端错误");
     }
     @PostMapping("/addpaper")
     @CrossOrigin

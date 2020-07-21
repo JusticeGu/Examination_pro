@@ -58,6 +58,16 @@ public class QuestionsController {
     public ResponseData getListBycid(int cid){
         return new ResponseData(ExceptionMsg.SUCCESS,questionsService.listbycourse(cid));
     }
+    @GetMapping("/qlistbytypecid")
+    @ApiOperation("根据课程代码以及试题类型获取问题")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "课程代码", value = "cid", defaultValue = "1", required = true),
+            @ApiImplicitParam(name = "题目类型", value = "type", defaultValue = "1", required = true),
+    }
+    )
+    public ResponseData qlistbytypecid(int type,int cid){
+        return new ResponseData(ExceptionMsg.SUCCESS,questionsService.listbytypeandcid(type,cid));
+    }
     @PostMapping("/addquestion")
     @ApiOperation("新增问题问题")
     public ResponseData addquestion(@RequestBody Questions questions){

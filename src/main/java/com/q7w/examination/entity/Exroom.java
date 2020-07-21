@@ -32,6 +32,7 @@ public class Exroom extends BaseEntity implements Serializable {
     private long time;//考试时间
     private int type;//考场类型
     private int allowtimes;//考场允许进入次数
+    private boolean security;//安全校验，
 
 
 }

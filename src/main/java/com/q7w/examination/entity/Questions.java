@@ -59,7 +59,9 @@ public class Questions extends BaseEntity implements Serializable {
     /**
      * 所属课程
      */
-    private int cid;
+    @ManyToOne
+    @JoinColumn(name="cid")
+    private Course course;
 
     /**
      * 难度

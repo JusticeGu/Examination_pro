@@ -11,6 +11,7 @@ import com.q7w.examination.Service.UserService;
 import com.q7w.examination.dao.PaperDAO;
 import com.q7w.examination.dao.QuestionsDAO;
 import com.q7w.examination.dto.QuestionsDTO;
+import com.q7w.examination.entity.Course;
 import com.q7w.examination.entity.Examdata;
 import com.q7w.examination.entity.Paper;
 import com.q7w.examination.entity.Questions;
@@ -50,7 +51,8 @@ public class QuestionsServiceimpl implements QuestionsService {
 
     @Override
     public List<Questions> listbycourse(int cid) {
-        List<Questions> list = questionsDAO.findAllByCid(cid);
+        Course course = courseService.findcourse(cid);
+        List<Questions> list = questionsDAO.findAllByCourse(course);
         return list;
     }
 
@@ -79,7 +81,8 @@ public class QuestionsServiceimpl implements QuestionsService {
         questionsInDB.setAnswer(questions.getAnswer());
         questionsInDB.setContext(questions.getContext());
         questionsInDB.setType(questions.getType());
-        questionsInDB.setCid(questions.getCid());
+        questionsInDB.setCourse(questions.getCourse());
+        //questionsInDB.setCid(questions.getCid());
         questionsInDB.setDiffcult(questions.getDiffcult());
         questionsInDB.setRemarks(questions.getRemarks());
         questionsInDB.setOptionA(questions.getOptionA());
@@ -120,7 +123,8 @@ public class QuestionsServiceimpl implements QuestionsService {
 
                     Questions newquestions = new Questions();
                     newquestions.setAnswer(question.get("答案").toString());
-                    newquestions.setCid(Integer.parseInt(question.get("所属课程代码").toString()));
+                    newquestions.setCourse(courseService.findcourse(Integer.parseInt(question.get("所属课程代码").toString())));
+                   // newquestions.setCid(Integer.parseInt(question.get("所属课程代码").toString()));
                     newquestions.setRemarks(question.get("备注").toString());
                     newquestions.setQuestionName(question.get("问题主体").toString());
                     newquestions.setType(Integer.parseInt(String.valueOf(question.get("问题类型"))));
@@ -200,7 +204,8 @@ public class QuestionsServiceimpl implements QuestionsService {
 
     @Override
     public List<Questions> listbytypeandcid(int type, int cid) {
-        return null;
+        Course course = courseService.findcourse(cid);
+        return questionsDAO.findAllByTypeAndCourse(type,course);
     }
 
     @Override
