@@ -2,14 +2,13 @@ package com.q7w.examination.Service.impl;
 
 
 import com.q7w.examination.Service.DataVisualizationService;
+import com.q7w.examination.dao.ExamdataDAO;
 import com.q7w.examination.dao.ExroomDAO;
+import com.q7w.examination.dao.PaperDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * @author JunXxxxi
@@ -20,6 +19,10 @@ import java.util.TimeZone;
 public class DataVisualizationServiceimpl implements DataVisualizationService {
     @Autowired
     ExroomDAO exroomDAO;
+    @Autowired
+    ExamdataDAO examedataDAO;
+    @Autowired
+    PaperDAO paperDAO;
 
     @Override
     public List<Integer> getNumOfExam() {
@@ -33,5 +36,72 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
             numOfExam.add(exroomDAO.getNumExamPerDay(t));
         }
         return numOfExam;
+    }
+
+    @Override
+    public List<Integer> getNumOfStudents(int kid) {
+        List<Integer> dataList = new ArrayList<Integer>();
+        Integer a = examedataDAO.countByKid(kid);
+        dataList.add(a);
+        Integer b = examedataDAO.countPass(kid);
+        dataList.add(b);
+        dataList.add(a-b);
+        dataList.add(examedataDAO.countExcellent(kid));
+        int i = examedataDAO.sumOfScore(kid);
+        int j = a;
+        i = i/j;
+        Integer c = i;
+        dataList.add(c);
+        dataList.add(examedataDAO.maxOfScore(kid));
+        dataList.add(examedataDAO.minOfScore(kid));
+        return dataList;
+    }
+
+    @Override
+    public List<Integer> getDisOfScore(int kid) {
+        List<Integer> dataList = new ArrayList<Integer>();
+        dataList.add(examedataDAO.countExcellent(kid));
+        dataList.add(examedataDAO.countGood(kid));
+        dataList.add(examedataDAO.countBad(kid));
+        dataList.add(examedataDAO.countPoor(kid));
+        return dataList;
+    }
+
+    @Override
+    public Map<Integer, Integer> getWrongSituation(int kid) {
+        List<Integer> dataList = new ArrayList<Integer>();
+        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        int pid = examedataDAO.getPid(kid);
+        int n = paperDAO.queryNumOfQueByPid(pid);
+        int m = 0, index = 0;
+        for(int i=1;i<=n;i++){
+            dataList.add(examedataDAO.getNumOfWrong(kid,i));
+        }
+        for(int i=0;i<4;i++){
+            for(int j=0;j<n;j++){
+                if(dataList.get(j)>m){
+                    m = dataList.get(j);
+                    index = j;
+                }
+            }
+            map.put(index+1,m);
+            dataList.set(index, -1);
+            m = -1;
+        }
+        return map;
+    }
+
+    @Override
+    public Map<Integer,Double> getRiaghtRate(int kid) {
+        Map<Integer, Double> map = new HashMap<Integer, Double>();
+        int pid = examedataDAO.getPid(kid);
+        int n = paperDAO.queryNumOfQueByPid(pid);
+        int numOfStudents = examedataDAO.countByKid(kid);
+        for(int i=1;i<=n;i++){
+            double m = 1-examedataDAO.getNumOfWrong(kid,i)*1.0/(numOfStudents*1.0);
+            Double mm = Double.valueOf(String.format("%.2f", m));
+            map.put(i,mm);
+        }
+        return map;
     }
 }

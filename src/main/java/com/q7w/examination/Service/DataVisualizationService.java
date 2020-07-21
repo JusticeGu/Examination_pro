@@ -1,6 +1,7 @@
 package com.q7w.examination.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author JunXxxxi
@@ -9,4 +10,8 @@ import java.util.List;
 
 public interface DataVisualizationService {
     public List<Integer> getNumOfExam();
+    public List<Integer> getNumOfStudents(int kid);
+    public List<Integer> getDisOfScore(int kid);
+    public Map<Integer,Integer> getWrongSituation(int kid);
+    public Map<Integer,Double> getRiaghtRate(int kid);
 }
