@@ -27,6 +27,7 @@ public class Paper extends BaseEntity implements Serializable {
     private String name;//试卷名称
     private int type;//试卷类型1-自主命题 2-组卷 3-答题卡模式
     private int status;
+    private int numofque;
     private boolean enable;
     private String questionId;//问题号
     private String qucontent;//问题集合
