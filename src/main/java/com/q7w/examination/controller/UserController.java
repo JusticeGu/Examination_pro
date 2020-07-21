@@ -63,6 +63,19 @@ public class UserController implements Serializable {
             return new ResponseData(ExceptionMsg.FAILED,"验证失败");
         }
     }
+    @RequestMapping(value="/resetpassword",method = RequestMethod.POST)
+    @CrossOrigin
+    @ApiOperation("重置密码邮件发送接口")
+    public ResponseData resetpassword(@RequestBody User user){
+        if (userService.usernamemailcheck(user.getUsername(), user.getEmail())){
+            String content = "http://localhost:8080/reset_pwd?url="
+                    +userService.sengmailvalidurl(user.getUsername())+"&name="+user.getUsername();
+            emailService.sendTextEmail(content, user.getEmail(), "【河马在线考试】您正在进行邮箱验证");
+            return new ResponseData(ExceptionMsg.SUCCESS,"验证成功，重置邮件已发送至您的邮箱");}
+        else {
+            return new ResponseData(ExceptionMsg.FAILED,"验证失败：用户名与邮箱不匹配");
+        }
+    }
     @GetMapping("/admin/role_1")
     public ResponseData listRoles_1(){
         return new ResponseData(ExceptionMsg.SUCCESS,adminRoleService.list());

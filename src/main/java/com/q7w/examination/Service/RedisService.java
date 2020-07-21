@@ -241,4 +241,55 @@ public final class RedisService {
             return 0;
         }
     }
+    //=============================== sort set =================================
+
+    /**
+     * 添加指定元素到有序集合中
+     * @param key
+     * @param score
+     * @param value
+     * @return
+     */
+    public boolean sortSetAdd(String key,double score,String value){
+        try{
+            return redisTemplate.opsForZSet().add(key,value,score);
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 有序集合中对指定成员的分数加上增量 increment
+     * @param key
+     * @param value
+     * @param i
+     * @return
+     */
+    public double sortSetZincrby(String key,String value,double i){
+        try {
+            //返回新增元素后的分数
+            return redisTemplate.opsForZSet().incrementScore(key, value, i);
+        }catch(Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    /**
+     * 获得有序集合指定范围元素 (从大到小)
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    public Set sortSetRange(String key,int start,int end){
+        try {
+            return redisTemplate.opsForZSet().reverseRange(key, start, end);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

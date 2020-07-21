@@ -29,6 +29,7 @@ public interface UserService {
     public List<UserDTO> list();
     public boolean resetPassword(User user);
     public boolean changePassword(String oldpwd,String pwd);
+    public boolean usernamemailcheck(String username,String email);//用户名邮箱是否匹配
     public boolean isExist(String username);
     public String usernametouno(String username);
     public boolean isable(String username);
@@ -47,6 +48,7 @@ public interface UserService {
     public String getusernamebysu();
     public User geyuserbytoken();
     public String sendmailsecode(String mail);
+    public String sengmailvalidurl(String username);
     public boolean checkmailcode(String mail,String code);
 
 

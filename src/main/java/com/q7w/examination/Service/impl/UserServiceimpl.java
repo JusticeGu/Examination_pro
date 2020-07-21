@@ -88,6 +88,24 @@ public class UserServiceimpl implements UserService {
         User user = userDAO.findByUsername(username);
         return null!=user;
     }
+
+    /**
+     * 用户名邮箱是否匹配
+     * @param username
+     * @param email
+     * @return
+     */
+    @Override
+    public boolean usernamemailcheck(String username, String email) {
+        if (username.isEmpty()||email.isEmpty()){return false;}
+        User user = userDAO.findByUsername(username);
+        if (user.getEmail().equals(email)){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
     @Override
     public String usernametouno(String username){
         User user = userDAO.findByUsername(username);
@@ -248,18 +266,10 @@ public class UserServiceimpl implements UserService {
     }
     @Override
     public int resetpwd(String usrname,String pwd,String newpwd){
-        User userInDB = userDAO.findByUsername(usrname);
-        String username = usrname;
-        String password = pwd;
-        Subject subject = SecurityUtils.getSubject();
-        try {
-            UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username,password);
-            subject.login(usernamePasswordToken);
-
-        } catch (AuthenticationException e) {
-            String message = "账号密码错误";
-            return 2;
-        }
+        Object usernamein = redisService.get("PWRD:"+pwd);
+        if (usernamein==null){return -1;}
+        if (!usernamein.toString().equals(usrname)){return -2;}
+        User userInDB = userDAO.findByUsername(pwd);
         try {
             String salt = new SecureRandomNumberGenerator().nextBytes().toString();
             int times = 2;
@@ -308,6 +318,13 @@ public class UserServiceimpl implements UserService {
         String code = RandomUtil.generateDigitalString(6);
         redisService.set("mailcode:"+mail, code, 300);
         return code;
+    }
+
+    @Override
+    public String sengmailvalidurl(String username) {
+        String url = RandomUtil.generateString(16);
+        redisService.set("PWRD:"+username, url, 300);
+        return url;
     }
 
     @Override
