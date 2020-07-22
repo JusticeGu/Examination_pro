@@ -53,4 +53,10 @@ public class CourseServiceimpl implements CourseService {
         Course course = courseDAO.findByCid(cid);
         return null!=course;
     }
+
+    @Override
+    public Course findcourse(int cid) {
+        Course course = courseDAO.findByCid(cid);
+        return courseDAO.findByCid(cid);
+    }
 }

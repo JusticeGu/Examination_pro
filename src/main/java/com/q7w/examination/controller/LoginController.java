@@ -162,13 +162,13 @@ public class LoginController implements Serializable {
     @ResponseBody
     @PutMapping("/api/user/resetpwd")
     @CrossOrigin
-    public ResponseData resetpwd(String username,String pwd,String newpwd){
-        int status = userService.resetpwd(username,pwd,newpwd);
+    public ResponseData resetpwd(@RequestBody User user){
+        int status = userService.resetpwd(user.getUsername(),user.getName(),user.getUser_password());
         switch (status) {
             case 1:
                 return new ResponseData(ExceptionMsg.SUCCESS,"修改成功");
-            case 2:
-                return new ResponseData(ExceptionMsg.FAILED_F,"原密码错误");
+            case -1:
+                return new ResponseData(ExceptionMsg.FAILED_F,"修改链接已失效，请重新获取");
             case 3:
                 return new ResponseData(ExceptionMsg.FAILED_F,"后端错误-5");
         }

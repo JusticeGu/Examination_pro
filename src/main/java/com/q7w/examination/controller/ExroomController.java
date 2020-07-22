@@ -10,6 +10,7 @@ import com.q7w.examination.entity.User;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
 import com.q7w.examination.util.FileUtil;
+import com.q7w.examination.util.TokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -40,6 +41,8 @@ public class ExroomController implements Serializable {
     ExroomService exroomService;
     @Autowired
     PaperService paperService;
+    @Autowired
+    TokenUtil tokenUtil;
     @GetMapping("/list")
     @ApiOperation("全部考试(场)列表")
     public ResponseData listroom(){
@@ -66,17 +69,23 @@ public class ExroomController implements Serializable {
     @PostMapping("/enter")
     @CrossOrigin
     @ApiOperation("进入考试(场)")
-    public ResponseData enterexroom(@RequestBody Exroom exroom) {
-        int status = exroomService.enterExroom(exroom.getKid());
-        switch (status) {
-            case 0:
+    public ResponseData enterexroom(@RequestBody Exroom exroom,HttpServletRequest request) {
+        String username= tokenUtil.getusername(request);
+        if (username==null){return new ResponseData(ExceptionMsg.FAILED,"请登陆后再进入考场"); }
+        Map status = exroomService.enterExroom(exroom.getKid(),username);
+        switch (status.get("code").toString()) {
+            case "0":
                 return new ResponseData(ExceptionMsg.FAILED,"考场不存在请重试");
-            case 1:
-                return new ResponseData(ExceptionMsg.SUCCESS_ER,"您已进入考场，请等待系统抽取试卷");
-            case 2:
+            case "1":
+                return new ResponseData(ExceptionMsg.SUCCESS_ER,status.get("expiretime"));
+            case "2":
                 return new ResponseData(ExceptionMsg.FAILED,"现在不在考场允许进入的时间范围");
-            case 3:
-                return new ResponseData(ExceptionMsg.FAILED,"您不在本考场的参考范围，或考试暂未开始，请联系老师添加或等待老师开始考试");
+            case "3":
+                return new ResponseData(ExceptionMsg.FAILED,"此考场非公开考场，且您不在此考场的考生范围内，请联系老师处理");
+            case "4":
+                return new ResponseData(ExceptionMsg.FAILED,"您已参加过次考试且次数超过允许考试次数上限");
+            case "5":
+                return new ResponseData(ExceptionMsg.FAILED,"为获取到您的学号信息，请先绑定学号后再参加考试");
         }
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
     }

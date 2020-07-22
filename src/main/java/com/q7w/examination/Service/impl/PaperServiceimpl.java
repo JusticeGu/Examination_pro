@@ -169,32 +169,35 @@ public class PaperServiceimpl implements PaperService {
 
     @Override
     public Map submitpaper(int kid,int pid, HttpServletRequest request,Map ansmap) {
+
         Map infomsg = new HashMap();
     //    String username = tokenUtil.getusername(request);
    //     if (username==null){
  //           infomsg.put("code","0");
  //           return infomsg;}
  //       int uid = userService.findByUsername(username).getUId();
-        Map markinfo=markscore(1, pid, kid,ansmap);
+        Map markinfo=markscore( pid,ansmap);
         System.out.println(markinfo);
+         int ans =  examDataService.updateexamdata(kid, pid, "0121111",
+              ansmap,(float) markinfo.get("score"),markinfo.get("wrong").toString());
+        if(ans==-1){infomsg.put("code","801");return infomsg;}
         infomsg.put("code","200");
         infomsg.put("score",markinfo);
-      //  examDataService.updateexamdata(kid, pid, "uid",
-          //      ansmap,markinfo.get("score").toString(),markinfo.get("wrong").toString())
+
+
         return infomsg;
     }
 
     /**
      * 阅卷服务
      *
-     * @param uid     用户id
      * @param pid     试卷号
      * @param ansmap  前端请求(答案列表)
      * @param ansmap
      * @return
      */
     @Override
-    public Map<String, Object> markscore(int uid, int pid, int kid, Map ansmap) {
+    public Map<String, Object> markscore(int pid, Map ansmap) {
         long startTime=System.nanoTime();
         System.out.println("执行代码块/计算分数方法");
         //获取试卷信息
