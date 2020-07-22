@@ -40,12 +40,6 @@ public class Paper extends BaseEntity implements Serializable {
     private List<Questions> questionsList;//问题列表后端映射
     @Transient
     private List<Integer> qidList;//题号后端映射
-    /**
-     * 所属课程
-     */
-    @ManyToOne
-    @JoinColumn(name="cid")
-    private Course course;
 
 
 }
