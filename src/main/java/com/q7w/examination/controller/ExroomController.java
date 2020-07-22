@@ -60,12 +60,20 @@ public class ExroomController implements Serializable {
         Page<Exroom> page = exroomService.listexroombynum(pageable);
         return new ResponseData(ExceptionMsg.SUCCESS,page);
     }
-    @GetMapping("/getlist")
+    @GetMapping("/notstartlist")
     @ApiOperation("待开考考试(场)列表")
     public ResponseData nowlistroom(){
         //逻辑
-        return new ResponseData(ExceptionMsg.SUCCESS,"0");
+        return new ResponseData(ExceptionMsg.SUCCESS,exroomService.getNotStartList());
     }
+
+    @GetMapping("/startedlist")
+    @ApiOperation("已开始/结束考试(场)列表")
+    public ResponseData pastlistroom(){
+        //逻辑
+        return new ResponseData(ExceptionMsg.SUCCESS,exroomService.getStartedList());
+    }
+
     @PostMapping("/enter")
     @CrossOrigin
     @ApiOperation("进入考试(场)")

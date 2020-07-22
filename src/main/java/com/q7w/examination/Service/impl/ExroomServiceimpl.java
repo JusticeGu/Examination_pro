@@ -131,7 +131,7 @@ public class ExroomServiceimpl implements ExroomService {
         Long updateTime = now.getTime();
         exroom.setUpdateTime(updateTime);
         int id = exroom.getKid();
-        ExroomDAO oldExroom = (ExroomDAO) exroomDAO.findByKid(id);
+        Exroom oldExroom = exroomDAO.findByKid(id);
         if(!StringUtils.isEmpty(oldExroom)){
             UpdateUtil.copyNullProperties(exroom,oldExroom);
         }
@@ -201,5 +201,19 @@ public class ExroomServiceimpl implements ExroomService {
         ExcelReader reader = ExcelUtil.getReader(file);
         reader.readAll();
         return 0;
+    }
+
+    @Override
+    public List<Exroom> getNotStartList() {
+        Date now= new Date();
+        Long recent = now.getTime();
+        return exroomDAO.findByStarttimeAfter(recent);
+    }
+
+    @Override
+    public List<Exroom> getStartedList() {
+        Date now= new Date();
+        Long recent = now.getTime();
+        return exroomDAO.findByStarttimeBefore(recent);
     }
 }

@@ -4,8 +4,11 @@ import com.q7w.examination.Service.AnnouncementService;
 import com.q7w.examination.dao.AnnouncementDAO;
 import com.q7w.examination.entity.Announcement;
 import com.q7w.examination.entity.Course;
+import com.q7w.examination.entity.Exroom;
+import com.q7w.examination.util.UpdateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -56,6 +59,11 @@ public class AnnouncementServiceimpl implements AnnouncementService {
         Date now= new Date();
         Long updateTime = now.getTime();
         announcement.setUpdateTime(updateTime);
+        int id = announcement.getAid();
+        Announcement oldAnnouncement = announcementDAO.findByAid(id);
+        if(!StringUtils.isEmpty(oldAnnouncement)){
+            UpdateUtil.copyNullProperties(announcement,oldAnnouncement);
+        }
         try{
             announcementDAO.save(announcement);
             return 1;
