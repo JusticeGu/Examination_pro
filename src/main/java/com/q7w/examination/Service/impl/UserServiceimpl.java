@@ -98,6 +98,7 @@ public class UserServiceimpl implements UserService {
     @Override
     public boolean usernamemailcheck(String username, String email) {
         if (username.isEmpty()||email.isEmpty()){return false;}
+        if (redisService.hasKey("PWRS:"+username)){return false;}
         User user = userDAO.findByUsername(username);
         if (user.getEmail().equals(email)){
             return true;
@@ -270,6 +271,7 @@ public class UserServiceimpl implements UserService {
         if (usernamein==null){return -1;}
         if (!usernamein.toString().equals(usrname)){return -2;}
         User userInDB = userDAO.findByUsername(pwd);
+        redisService.del("PWRD:"+pwd);
         try {
             String salt = new SecureRandomNumberGenerator().nextBytes().toString();
             int times = 2;

@@ -31,7 +31,8 @@ public class URLPathMatchingFilter extends PathMatchingFilter {
     // 登录标识
     private static String LOGIN_SIGN = "Authorization";
     @Override
-    protected boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+    protected boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue)
+            throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
