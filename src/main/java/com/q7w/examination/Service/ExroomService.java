@@ -28,6 +28,4 @@ public interface ExroomService {
     public int startexrooom(int kid);
     public int endroom(int kid);
     public int uploadgrouplist(MultipartFile multipartFile);
-    public List<Exroom> getNotStartList();
-    public List<Exroom> getStartedList();
 }

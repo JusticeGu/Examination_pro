@@ -60,6 +60,7 @@ public class ExamDataServiceimpl implements ExamDataService {
     public int updateexamdata(int kid, int pid, String uno, Map ans, float score, String wronglist) {
         Examdata examdata = examdataDAO.findByKidAndPidAndUno(kid, pid,uno);
         if (examdata==null){return -1; }
+        if(examdata.getStatus()==3){return -2;}
         examdata.setAnslist(ans.toString());
         if (examdata.getSubscore()<=score){
             examdata.setSubscore(score);

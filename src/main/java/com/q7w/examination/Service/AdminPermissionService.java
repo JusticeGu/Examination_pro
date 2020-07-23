@@ -36,6 +36,8 @@ public class AdminPermissionService {
 
     public List<AdminPermission> list() {return adminPermissionDAO.findAll();}
 
+
+    //匹配URL查询所有权限对应的URL中是否有请求URL如无则直接返回错误
     public boolean needFilter(String requestAPI) {
         List<AdminPermission> ps = adminPermissionDAO.findAll();
         for (AdminPermission p: ps) {

@@ -2,11 +2,8 @@ package com.q7w.examination.config;
 
 import com.q7w.examination.Service.AdminPermissionService;
 import com.q7w.examination.Service.AdminRoleService;
-import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.Service.UserService;
 import com.q7w.examination.entity.User;
-import com.q7w.examination.util.JWTToken;
-import com.q7w.examination.util.JwtUtils;
 import org.apache.shiro.authc.*;
 //import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -18,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.util.Set;
 
 public class Q7wRealm extends AuthorizingRealm {
@@ -28,15 +24,6 @@ public class Q7wRealm extends AuthorizingRealm {
     private AdminPermissionService adminPermissionService;
     @Autowired
     private AdminRoleService adminRoleService;
-    @Resource
-    RedisService redisService;
-    /**
-     * 大坑！，必须重写此方法，不然Shiro会报错
-     */
-    @Override
-    public boolean supports(AuthenticationToken token) {
-        return token instanceof JWTToken;
-    }
 
     // 重写获取授权信息方法
     @Override
@@ -53,23 +40,24 @@ public class Q7wRealm extends AuthorizingRealm {
 
     // 获取认证信息，即根据 token 中的用户名从数据库中获取密码、盐等并返回
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
-        String token = auth.getCredentials().toString();
-        // 解密获得username
-        String username = JwtUtils.getUsername(token);
-        if (username == null) {
-            throw new AuthenticationException("令牌无效");
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        String userName = token.getPrincipal().toString();
+        User user = userService.findByUsername(userName);
+        if (ObjectUtils.isEmpty(user)) {
+            throw new UnknownAccountException();
         }
-        User userBean = (User) redisService.get(token);
-        if (userBean == null) {
-            throw new AuthenticationException("令牌已过期");
-        } else {
-            redisService.expire(token, 60);
-            return new SimpleAuthenticationInfo(token, token, "MyRealm");
-        }
-
+        String passwordInDB = user.getUser_password();
+        String salt = user.getSalt();
+        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(userName, passwordInDB, ByteSource.Util.bytes(salt), getName());
+        return authenticationInfo;
     }
-
+    /**
+     * 设定密码校验的Hash算法与迭代次数
+     */
+    @PostConstruct
+    public void initCredentialsMatcher() {
+        setCredentialsMatcher(new RetryLimitSimpleCredentialsMatcher());
+    }
 
 
 }

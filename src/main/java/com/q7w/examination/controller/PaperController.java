@@ -114,7 +114,7 @@ public class PaperController {
             case 0:
                 return new ResponseData(ExceptionMsg.FAILED,"试卷已存在请勿重复操作");
             case 1:
-                return new ResponseData(ExceptionMsg.SUCCESS_ER,"提交成功,您可以创建考试绑定此试卷" );
+                return new ResponseData(ExceptionMsg.SUCCESS,"提交成功,您可以创建考试绑定此试卷" );
             case 2:
                 return new ResponseData(ExceptionMsg.FAILED,"提交失败，请检查数据");
         }

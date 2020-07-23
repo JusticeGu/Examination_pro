@@ -32,8 +32,11 @@ public class Paper extends BaseEntity implements Serializable {
     private String questionId;//问题号
     private String qucontent;//问题集合
     private float sinscore;//单选分数
+    private int sinnum;//单选个数
     private float mulscore;//多选分数
+    private int mulnum;
     private float subscore;//主观分数
+    private int subnum;
     @Transient
     private List<Map<String,Object>> paperQuestions;//前端显示
     @Transient

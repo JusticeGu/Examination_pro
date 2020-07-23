@@ -11,7 +11,5 @@ public interface ExroomDAO extends JpaRepository<Exroom,Integer> {
     List<Exroom> findAllByStarttimeBetween(long now,long ddl);
     @Query(nativeQuery =true,value = "select count(*) from exroom where create_time >= ?1-24*60*60*1000 and create_time < ?1")
     Integer getNumExamPerDay(Long t);
-    List<Exroom> findByStarttimeBefore(long now);
-    List<Exroom> findByStarttimeAfter(long now);
 
 }

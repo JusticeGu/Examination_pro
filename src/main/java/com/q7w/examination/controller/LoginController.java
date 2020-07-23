@@ -130,7 +130,6 @@ public class LoginController implements Serializable {
 
     }
     @PostMapping(value = "/api/login1")
-    @RequiresPermissions("/api/login1")
     @ResponseBody
     @CrossOrigin
     public ResponseData login_1(@RequestBody User requestUser) {
