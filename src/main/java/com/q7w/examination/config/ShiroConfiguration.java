@@ -1,183 +1,46 @@
 package com.q7w.examination.config;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.Filter;
 
 import com.q7w.examination.filter.JWTFilter;
-import com.q7w.examination.filter.URLPathMatchingFilter;
+import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.authc.pam.AuthenticationStrategy;
+import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
+import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.mgt.SessionStorageEvaluator;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.apache.shiro.web.servlet.SimpleCookie;
-import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
-import org.crazycake.shiro.RedisCacheManager;
-import org.crazycake.shiro.RedisManager;
-import org.crazycake.shiro.RedisSessionDAO;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.servlet.Filter;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Configuration
 public class ShiroConfiguration {
+
+    /**
+     * 交由 Spring 来自动地管理 Shiro-Bean 的生命周期
+     */
     @Bean
-    public static LifecycleBeanPostProcessor getLifecycleBeanProcessor() {
+    public static LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
     }
 
-    @Bean
-    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
-        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
-        shiroFilterFactoryBean.setSecurityManager(securityManager);
-        shiroFilterFactoryBean.setLoginUrl("/nowhere");
-
-        Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
-        Map<String, Filter> customizedFilter = new HashMap<>();  // 自定义过滤器设置 1
-        customizedFilter.put("jwt", new JWTFilter());
-        customizedFilter.put("url", getURLPathMatchingFilter()); // 自定义过滤器设置 2，命名，需在设置过滤路径前
-      //  filterChainDefinitionMap.put("/api/authentication", "authc"); // 防鸡贼登录
-        filterChainDefinitionMap.put("/api/menu", "authc");
-        //filterChainDefinitionMap.put("/api/admin/**", "authc");
-
-        filterChainDefinitionMap.put("/api/admin/**", "jwt");  // 自定义过滤器设置 3，设置过滤路径
-
-        shiroFilterFactoryBean.setFilters(customizedFilter); // 自定义过滤器设置 4，启用
-        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
-        return shiroFilterFactoryBean;
-    }
-
-    public URLPathMatchingFilter getURLPathMatchingFilter() {
-        return new URLPathMatchingFilter();
-    }
-    @Bean
-    public ShiroDatabaseRealm shiroDatabaseRealm() {
-        return new ShiroDatabaseRealm();
-    }
-    @Bean
-    public SecurityManager securityManager() {
-        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        //securityManager.setRealm(getWJRealm());
-        securityManager.setRealm(shiroDatabaseRealm());
-        // 关闭自带session
-        DefaultSessionStorageEvaluator evaluator = new DefaultSessionStorageEvaluator();
-        evaluator.setSessionStorageEnabled(false);
-
-        DefaultSubjectDAO subjectDAO = new DefaultSubjectDAO();
-        subjectDAO.setSessionStorageEvaluator(evaluator);
-
-        securityManager.setSubjectDAO(subjectDAO);
-
-        //securityManager.setRememberMeManager(rememberMeManager());
-        // 自定义缓存实现 使用redis
-        //securityManager.setCacheManager(cacheManager());
-        // 自定义session管理 使用redis
-      //  securityManager.setSessionManager(sessionManager());
-        return securityManager;
-    }
-
-    public CookieRememberMeManager rememberMeManager() {
-        CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
-        cookieRememberMeManager.setCookie(rememberMeCookie());
-        cookieRememberMeManager.setCipherKey("EVANNIGHTLY_WAOU".getBytes());
-        return cookieRememberMeManager;
-    }
     /**
-     * cacheManager 缓存 redis实现
-     * 使用的是shiro-redis开源插件
-     *
-     * @return
+     * 为 Spring-Bean 开启对 Shiro 注解的支持
      */
-    public RedisCacheManager cacheManager() {
-        RedisCacheManager redisCacheManager = new RedisCacheManager();
-        redisCacheManager.setRedisManager(redisManager());
-        return redisCacheManager;
-    }
-
-    /**
-     * 配置shiro redisManager
-     * 使用的是shiro-redis开源插件
-     *
-     * @return
-     */
-    @Bean
-    public RedisManager redisManager() {
-      //  RedisManager redisManager = new MyRedisManager();
-        RedisManager redisManager = new RedisManager();
-        redisManager.setHost("localhost");
-        redisManager.setPort(6379);
-        // 配置缓存过期时间
-        //redisManager.setExpire(expireTime);
-        redisManager.setTimeout(3600);
-        // redisManager.setPassword(password);
-        return redisManager;
-    }
-
-
-
-//    /**
-//     * 配置shiro redisManager
-//     * 网上的一个 shiro-redis 插件，实现了shiro的cache接口、CacheManager接口就
-//     * @return
-//     */
-//    @Bean
-//    public RedisManager redisManager() {
-//        RedisManager redisManager = new RedisManager();
-//        redisManager.setHost("localhost");
-//        redisManager.setPort(6379);
-//        redisManager.setExpire(18000);// 配置过期时间
-//        // redisManager.setTimeout(timeout);
-//        // redisManager.setPassword(password);
-//        return redisManager;
-//    }
-
-    /**
-     * Session Manager
-     * 使用的是shiro-redis开源插件
-     */
-    @Bean
-    public DefaultWebSessionManager sessionManager() {
-        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-        sessionManager.setSessionDAO(redisSessionDAO());
-        return sessionManager;
-    }
-
-    /**
-     * RedisSessionDAO shiro sessionDao层的实现 通过redis
-     * 使用的是shiro-redis开源插件
-     */
-    @Bean
-    public RedisSessionDAO redisSessionDAO() {
-        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
-        redisSessionDAO.setRedisManager(redisManager());
-        return redisSessionDAO;
-    }
-    @Bean
-    public SimpleCookie rememberMeCookie() {
-        SimpleCookie simpleCookie = new SimpleCookie("rememberMe");
-        simpleCookie.setMaxAge(259200);
-        return simpleCookie;
-    }
-
-    @Bean
-    public Q7wRealm getWJRealm() {
-        Q7wRealm wjRealm = new Q7wRealm();
-        wjRealm.setCredentialsMatcher(hashedCredentialsMatcher());
-        return wjRealm;
-    }
-
-    @Bean
-    public HashedCredentialsMatcher hashedCredentialsMatcher() {
-        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-        hashedCredentialsMatcher.setHashAlgorithmName("md5");
-        hashedCredentialsMatcher.setHashIterations(2);
-        return hashedCredentialsMatcher;
-    }
     @Bean
     public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
         AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
@@ -185,6 +48,125 @@ public class ShiroConfiguration {
         return authorizationAttributeSourceAdvisor;
     }
 
+    @Bean
+    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+        DefaultAdvisorAutoProxyCreator app = new DefaultAdvisorAutoProxyCreator();
+        app.setProxyTargetClass(true);
+        return app;
 
+    }
 
+    /**
+     * 不向 Spring容器中注册 JwtFilter Bean，防止 Spring 将 JwtFilter 注册为全局过滤器
+     * 全局过滤器会对所有请求进行拦截，而本例中只需要拦截除 /login 和 /logout 外的请求
+     * 另一种简单做法是：直接去掉 jwtFilter()上的 @Bean 注解
+     */
+    @Bean
+    public FilterRegistrationBean<Filter> registration(JWTFilter filter) {
+        FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<Filter>(filter);
+        registration.setEnabled(false);
+        return registration;
+    }
+
+    @Bean
+    public JWTFilter jwtFilter() {
+        return new JWTFilter();
+    }
+
+    /**
+     * 配置访问资源需要的权限
+     */
+    @Bean
+    ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
+        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+        shiroFilterFactoryBean.setSecurityManager(securityManager);
+        shiroFilterFactoryBean.setLoginUrl("/login");
+        shiroFilterFactoryBean.setSuccessUrl("/authorized");
+        shiroFilterFactoryBean.setUnauthorizedUrl("/unauthorized");
+
+        // 添加 jwt 专用过滤器，拦截除 /login 和 /logout 外的请求
+        Map<String, Filter> filterMap = new LinkedHashMap<>();
+        filterMap.put("jwtFilter", jwtFilter());
+        shiroFilterFactoryBean.setFilters(filterMap);
+
+        LinkedHashMap<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
+        filterChainDefinitionMap.put("/api/login", "anon"); // 可匿名访问
+        filterChainDefinitionMap.put("/logout", "logout"); // 退出登录
+        filterChainDefinitionMap.put("/**", "jwtFilter,authc"); // 需登录才能访问
+        filterChainDefinitionMap.put("/api/announcement/**", "jwtFilter,authc");
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+        return shiroFilterFactoryBean;
+    }
+
+    /**
+     * 配置 ModularRealmAuthenticator
+     */
+    @Bean
+    public ModularRealmAuthenticator authenticator() {
+        ModularRealmAuthenticator authenticator = new MultiRealmAuthenticator();
+        // 设置多 Realm的认证策略，默认 AtLeastOneSuccessfulStrategy
+        AuthenticationStrategy strategy = new FirstSuccessfulStrategy();
+        authenticator.setAuthenticationStrategy(strategy);
+        return authenticator;
+    }
+
+    /**
+     * 禁用session, 不保存用户登录状态。保证每次请求都重新认证
+     */
+    @Bean
+    protected SessionStorageEvaluator sessionStorageEvaluator() {
+        DefaultSessionStorageEvaluator sessionStorageEvaluator = new DefaultSessionStorageEvaluator();
+        sessionStorageEvaluator.setSessionStorageEnabled(false);
+        return sessionStorageEvaluator;
+    }
+
+    /**
+     * JwtRealm 配置，需实现 Realm 接口
+     */
+    @Bean
+    public JwtRealm jwtRealm() {
+        JwtRealm jwtRealm = new JwtRealm();
+        // 设置加密算法
+        CredentialsMatcher credentialsMatcher = new JwtCredentialsMatcher();
+        // 设置加密次数
+        jwtRealm.setCredentialsMatcher(credentialsMatcher);
+        return jwtRealm;
+    }
+
+    @Bean
+    public Q7wRealm q7wRealm() {
+        Q7wRealm q7wRealm = new Q7wRealm();
+        q7wRealm.setCredentialsMatcher(hashedCredentialsMatcher());
+        return q7wRealm;
+    }
+    @Bean
+    public HashedCredentialsMatcher hashedCredentialsMatcher() {
+        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
+        hashedCredentialsMatcher.setHashAlgorithmName("md5");
+        hashedCredentialsMatcher.setHashIterations(2);
+        return hashedCredentialsMatcher;
+    }
+    /**
+     * 配置 SecurityManager
+     */
+    @Bean
+    public SecurityManager securityManager() {
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+
+        // 1.Authenticator
+        securityManager.setAuthenticator(authenticator());
+
+        // 2.Realm
+        List<Realm> realms = new ArrayList<Realm>(16);
+        realms.add(jwtRealm());
+        realms.add(q7wRealm());
+        securityManager.setRealms(realms);
+
+        // 3.关闭shiro自带的session
+        DefaultSubjectDAO subjectDAO = new DefaultSubjectDAO();
+        subjectDAO.setSessionStorageEvaluator(sessionStorageEvaluator());
+        securityManager.setSubjectDAO(subjectDAO);
+
+        return securityManager;
+    }
 }

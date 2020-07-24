@@ -31,7 +31,7 @@ public class JwtUtils {
      */
     public static boolean verify(String token, String username, String secret) {
         try {
-            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
             JWTVerifier verifier = JWT.require(algorithm).withClaim("username", username).build();
             verifier.verify(token);
             return true;
@@ -41,14 +41,18 @@ public class JwtUtils {
     }
 
 
+
+
+
+
     /**
      * 生成签名
      */
     public static String sign(String username, String secret) {
         try {
             Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
-            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
-            // 附带username信息
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            // 附带username，nickname信息
             return JWT.create().withClaim("username", username).withExpiresAt(date).sign(algorithm);
         } catch (JWTCreationException e) {
             return null;

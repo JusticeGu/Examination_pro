@@ -91,11 +91,11 @@ public class LoginController implements Serializable {
         try {
             subject.login(usernamePasswordToken);
             User user = userService.findByUsername(username);
-            if (user.isEnabled()) {
+            if (!user.isEnabled()) {
                 return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户状态异常，请联系客服人员处理");
             }
             Map<String,Object> userinfo = new Hashtable<>();
-            userinfo.put("token", JwtUtils.sign(username, "s"));
+            userinfo.put("token", JwtUtils.sign(username,JwtUtils.SECRET_KEY));
             userinfo.put("username",username );
             return new ResponseData(ExceptionMsg.SUCCESS,userinfo);
         } catch (IncorrectCredentialsException e) {
