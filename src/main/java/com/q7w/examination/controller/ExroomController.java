@@ -45,12 +45,14 @@ public class ExroomController implements Serializable {
     TokenUtil tokenUtil;
     @GetMapping("/list")
     @ApiOperation("全部考试(场)列表")
+    @CrossOrigin
     public ResponseData listroom(){
         //逻辑
         return new ResponseData(ExceptionMsg.SUCCESS,exroomService.listExroom());
     }
     @GetMapping("/listnum")
     @ApiOperation("全部考试(场)列表(分页)")
+    @CrossOrigin
     public ResponseData listroombunum(@RequestParam(value = "start",defaultValue = "0")Integer start,
                                       @RequestParam(value = "num",defaultValue = "10")Integer num)
     {
@@ -62,6 +64,7 @@ public class ExroomController implements Serializable {
     }
     @GetMapping("/notstartlist")
     @ApiOperation("待开考考试(场)列表")
+    @CrossOrigin
     public ResponseData nowlistroom(){
         //逻辑
         return new ResponseData(ExceptionMsg.SUCCESS,exroomService.getNotStartList());
@@ -69,6 +72,7 @@ public class ExroomController implements Serializable {
 
     @GetMapping("/startedlist")
     @ApiOperation("已开始/结束考试(场)列表")
+    @CrossOrigin
     public ResponseData pastlistroom(){
         //逻辑
         return new ResponseData(ExceptionMsg.SUCCESS,exroomService.getStartedList());

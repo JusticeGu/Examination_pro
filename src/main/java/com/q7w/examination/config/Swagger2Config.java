@@ -1,5 +1,6 @@
 package com.q7w.examination.config;
 
+import com.q7w.examination.util.JwtUtils;
 import springfox.documentation.service.Parameter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +28,7 @@ public class Swagger2Config {
 
     @Bean
     public Docket createRestApi() {
-        Parameter token = new ParameterBuilder().name("Q7WSecurity")  //全局参数
+        Parameter token = new ParameterBuilder().name(JwtUtils.AUTH_HEADER)  //全局参数
                 .description("用户登陆令牌")
                 .parameterType("header")
                 .modelRef(new ModelRef("String"))

@@ -19,7 +19,8 @@ import java.util.Map;
 public class JwtUtils {
 
     // 请求头
-    public static final String AUTH_HEADER = "Q7WSecurity";
+    //public static final String AUTH_HEADER = "Q7WSecurity";
+    public static final String AUTH_HEADER = "Hippotoken";
     // 私密
     public static final String SECRET_KEY = "10$rw4dacU3dqeT.XAs0Hq";
     // 过期时间1h

@@ -14,11 +14,15 @@ public class MyWebConfigurer implements WebMvcConfigurer {
         //所有请求都允许跨域，使用这种配置方法就不能在 interceptor 中再配置 header 了
         //测试WEBHOOK
         registry.addMapping("/api/**")
-                .allowCredentials(true)
                 .allowedOrigins("http://localhost:8080","http://localhost:8082","http://hippo-exam.q7w.cn")
                 .allowedMethods("POST", "GET", "PUT", "OPTIONS", "DELETE")
                 .allowedHeaders("*")
-                .maxAge(3600);
+                .exposedHeaders("access-control-allow-headers",
+                        "access-control-allow-methods",
+                        "access-control-allow-origin",
+                        "access-control-max-age",
+                        "X-Frame-Options")
+                .allowCredentials(false).maxAge(3600);
     }
 
     @Override

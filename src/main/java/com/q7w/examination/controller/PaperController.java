@@ -33,6 +33,7 @@ public class PaperController {
     RedisService redisService;
     @GetMapping("/queryPaper")
     @ApiOperation("试卷模糊查询")
+    @CrossOrigin
     public ResponseData querycourse(String papername){
         if (papername.length()>=10||papername.length()<=3){return new ResponseData(ExceptionMsg.FAILED_F,"请不要输入过长或过短的内容");}
         //逻辑
@@ -40,6 +41,7 @@ public class PaperController {
     }
     @GetMapping("/list")
     @ApiOperation("试卷列表(分页)")
+    @CrossOrigin
     public ResponseData listroombunum(@RequestParam(value = "start",defaultValue = "0")Integer start,
                                       @RequestParam(value = "num",defaultValue = "10")Integer num)
     {

@@ -95,8 +95,8 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         try {
             Subject subject = getSubject(request, response);
             subject.login(token); // 交给 Shiro 去进行登录验证
-            boolean ans = onLoginSuccess(token, subject, request, response);
-            return ans;
+
+            return onLoginSuccess(token, subject, request, response);
         } catch (AuthenticationException e) {
             return onLoginFailure(token, e, request, response);
         }

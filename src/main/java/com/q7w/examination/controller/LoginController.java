@@ -103,7 +103,7 @@ public class LoginController implements Serializable {
             userinfo.put("token",token);
             userinfo.put("username",username );
             redisService.set("tk-"+user.getUsername(),token,600);
-            return new ResponseData(ExceptionMsg.SUCCESS,userinfo);
+            return new ResponseData(ExceptionMsg.SUCCESS,token);
         } catch (IncorrectCredentialsException e) {
             return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户名或密码错误");
         } catch (UnknownAccountException e) {
