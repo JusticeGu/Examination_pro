@@ -27,7 +27,7 @@ public class Swagger2Config {
 
     @Bean
     public Docket createRestApi() {
-        Parameter token = new ParameterBuilder().name("token")  //全局参数
+        Parameter token = new ParameterBuilder().name("Q7WSecurity")  //全局参数
                 .description("用户登陆令牌")
                 .parameterType("header")
                 .modelRef(new ModelRef("String"))
@@ -52,7 +52,7 @@ public class Swagger2Config {
         return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo())
                 .groupName("获取Token")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.csdn.swaggershirojwtredis.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.q7w.examination.controller"))
                 .paths(PathSelectors.ant("/GetToken"))
                 .build();
     }

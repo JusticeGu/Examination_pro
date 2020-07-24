@@ -9,6 +9,7 @@ import com.q7w.examination.Service.UserService;
 import com.q7w.examination.entity.Uesr.AdminMenu;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
+import io.swagger.annotations.Api;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 @RestController
+@Api(tags = "用户获取菜单接口")
 public class MenuController {
     @Autowired
     AdminMenuService adminMenuService;

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.q7w.examination.util.JWTToken;
 import com.q7w.examination.util.JwtUtils;
+import org.apache.shiro.authc.AccountException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
@@ -122,7 +123,8 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         httpResponse.setContentType("application/json;charset=UTF-8");
         httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
         PrintWriter writer = httpResponse.getWriter();
-        writer.write("{\"errCode\": 401, \"msg\": \"未登录\"}");
+        writer.write("{\"errCode\": 401, \"msg\": \"登陆令牌已失效或不存在,请重新登陆!\"}");
+
         fillCorsHeader(WebUtils.toHttp(servletRequest), httpResponse);
         return false;
     }

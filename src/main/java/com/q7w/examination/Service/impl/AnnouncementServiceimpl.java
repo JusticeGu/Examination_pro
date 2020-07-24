@@ -24,6 +24,7 @@ public class AnnouncementServiceimpl implements AnnouncementService {
 
     @Override
     public List<Announcement> announcementList() {
+
         return announcementDAO.findAll();
     }
 

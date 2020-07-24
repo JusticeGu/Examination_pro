@@ -13,6 +13,8 @@ import com.q7w.examination.util.JWTToken;
 import com.q7w.examination.util.JwtUtils;
 import com.q7w.examination.util.Pbkdf2Sha256;
 import io.buji.pac4j.subject.Pac4jPrincipal;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -37,6 +39,7 @@ import java.util.Map;
  * @date 2020/7/15 19:29
  **/
 @RestController
+@Api(tags = "用户登录各类相关接口")
 public class LoginController implements Serializable {
     @Autowired
     UserService userService;
@@ -48,6 +51,7 @@ public class LoginController implements Serializable {
 
     @PostMapping("/api/register")
     @CrossOrigin
+    @ApiOperation("用户注册接口")
     public ResponseData register(@RequestBody User user,@RequestParam("code") String code) {
         if(!userService.checkmailcode(user.getEmail(),code)){
             return new ResponseData(ExceptionMsg.FAILED,"验证码错误，请重新输入");
@@ -63,8 +67,9 @@ public class LoginController implements Serializable {
         }
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
     }
-    @PostMapping("/api/msgregister")
+    @PostMapping("/api/tearegister")
     @CrossOrigin
+    @ApiOperation("教师注册后台接口")
     public ResponseData msgregister(@RequestBody User user) {
         int status = userService.msgregister(user);
         switch (status) {
@@ -81,22 +86,23 @@ public class LoginController implements Serializable {
     }
     @PostMapping("/api/login")
     @CrossOrigin
+    @ApiOperation("登录接口")
     public ResponseData login(@RequestBody User requestUser) {
         String username = requestUser.getUsername();
         username = HtmlUtils.htmlEscape(username);
         Subject subject = SecurityUtils.getSubject();
-//        subject.getSession().setTimeout(10000);
         UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username,requestUser.getUser_password());
-        usernamePasswordToken.setRememberMe(true);
         try {
             subject.login(usernamePasswordToken);
             User user = userService.findByUsername(username);
             if (!user.isEnabled()) {
                 return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户状态异常，请联系客服人员处理");
             }
+            String token = JwtUtils.sign(username,JwtUtils.SECRET_KEY);
             Map<String,Object> userinfo = new Hashtable<>();
-            userinfo.put("token", JwtUtils.sign(username,JwtUtils.SECRET_KEY));
+            userinfo.put("token",token);
             userinfo.put("username",username );
+            redisService.set("tk-"+user.getUsername(),token,600);
             return new ResponseData(ExceptionMsg.SUCCESS,userinfo);
         } catch (IncorrectCredentialsException e) {
             return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户名或密码错误");
@@ -104,64 +110,23 @@ public class LoginController implements Serializable {
             return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户名或密码错误");
         }
     }
-    @PostMapping("/api/jwtlogin")
-    @CrossOrigin
-    public ResponseData jwtlogin(@RequestBody User requestUser) {
-        String username = requestUser.getUsername();
-        username = HtmlUtils.htmlEscape(username);
-        String password = requestUser.getUser_password();
-        User user = userService.findByUsername(username);
-        if(user==null){return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户名或密码错误");}
-        boolean match = Pbkdf2Sha256.verification(password,user.getUser_password());
-        if (match){
-            if (user.isEnabled()) {
-                return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户状态异常，请联系客服人员处理");
-        }
-            Map<String,Object> userinfo = new Hashtable<>();
-            String token = JwtUtils.sign(username, "s");
-            userinfo.put("token",token);
-            userinfo.put("username",username);
-          //  redisService.hmset(token,userinfo,3600);
-            redisService.set(token, user,600);
-            return new ResponseData(ExceptionMsg.SUCCESS,userinfo);}
-            else {
-                return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户名或密码错误");
-                }
 
-    }
-    @PostMapping(value = "/api/login1")
-    @RequiresPermissions("/api/login1")
-    @ResponseBody
-    @CrossOrigin
-    public ResponseData login_1(@RequestBody User requestUser) {
-        String username = requestUser.getUsername();
-        String user_password = requestUser.getUser_password();
-        Subject subject = SecurityUtils.getSubject();
-//        subject.getSession().setTimeout(10000);
-        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username,requestUser.getUser_password());
-        //System.out.println((usernamePasswordToken.getPassword()).toString()+usernamePasswordToken.getUsername());
-        usernamePasswordToken.setRememberMe(true);
-        try {
-            subject.login(usernamePasswordToken);
-            return new ResponseData(ExceptionMsg.SUCCESS,requestUser.getUsername());
-        } catch (AuthenticationException e) {
-            String message = "账号密码错误";
-            return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户名或密码错误");
-        }
-    }
 
     @ResponseBody
     @GetMapping("api/logout")
     @CrossOrigin
+    @ApiOperation("登出接口")
     public ResponseData logout() {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
+     //   redisService.del();
         String message = "成功登出";
         return new ResponseData(ExceptionMsg.SUCCESS,message);
     }
     @ResponseBody
     @PutMapping("/api/user/resetpwd")
     @CrossOrigin
+    @ApiOperation("重置密码接口")
     public ResponseData resetpwd(@RequestBody User user){
         int status = userService.resetpwd(user.getUsername(),user.getName(),user.getUser_password());
         switch (status) {
@@ -175,6 +140,7 @@ public class LoginController implements Serializable {
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
     }
     @PutMapping("/api/admin/user/password")
+    @ApiOperation("后台用户密码初始化接口")
     public ResponseData resetPassword(@RequestBody User requestUser) {
         if (userService.resetPassword(requestUser)) {
             return new ResponseData(ExceptionMsg.SUCCESS,"密码已初始化为手机号后6位");
@@ -184,15 +150,13 @@ public class LoginController implements Serializable {
     }
     @ResponseBody
     @GetMapping("api/au")
+    @ApiOperation("用户登录状态监测接口")
     @CrossOrigin
     public ResponseData au() {
         try {
-            Subject subject= SecurityUtils.getSubject();
-            String username = SecurityUtils.getSubject().getPrincipal().toString();
-        //    String username = userService.getusernamebysu();
-           //  User user = userService.findByUsername(username);
+            Object subject= SecurityUtils.getSubject().getPrincipal();
+            String username = JwtUtils.getUsername(subject.toString());
             return new ResponseData(ExceptionMsg.SUCCESS,username);
-           // return new ResponseData(ExceptionMsg.FAILED,"异常");
         }
         catch (Exception e){
             return new ResponseData(ExceptionMsg.FAILED,"用户未登录");
@@ -201,6 +165,7 @@ public class LoginController implements Serializable {
 
     @GetMapping("api/authentication")
     @CrossOrigin
+    @ApiOperation("用户登录状态监测接口2")
     public ResponseData authentication() {
         try {
             String username = SecurityUtils.getSubject().getPrincipal().toString();
@@ -214,6 +179,7 @@ public class LoginController implements Serializable {
     }
 
     @GetMapping("/wx/getopenid")
+    @ApiOperation("微信小程序获取OPENID接口")
     public String userLogin(@RequestParam("code") String code) throws IOException {
          String WXAPPID = "wxc4d82adbcb40d914";
          String WXSECRET = "a789fb8efbbc3aea7729d9c759de2568";
@@ -239,6 +205,7 @@ public class LoginController implements Serializable {
 
     @PostMapping("api/wxbind")
     @CrossOrigin
+    @ApiOperation("微信小程序用户绑定")
     public ResponseData wxbind(@RequestBody User requestUser) {
         String username = requestUser.getUsername();
         String password = requestUser.getUser_password();
@@ -266,6 +233,7 @@ public class LoginController implements Serializable {
     }}
     @GetMapping("api/wxlogin")
     @CrossOrigin
+    @ApiOperation("微信小程序登录接口")
     public ResponseData wxlogin(String openid) {
         try {
             if(redisService.hasKey(openid)){ return new ResponseData(ExceptionMsg.SUCCESS_GETR,"登录状态正常");

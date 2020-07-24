@@ -1,4 +1,5 @@
 package com.q7w.examination.config;
+import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.util.JwtUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -10,6 +11,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * @author xiaogu
  * @date 2020/7/24 18:21
@@ -18,6 +21,8 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 
 
 public class JwtCredentialsMatcher implements CredentialsMatcher {
+    @Autowired
+    private RedisService redisService;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -27,12 +32,12 @@ public class JwtCredentialsMatcher implements CredentialsMatcher {
     @Override
     public boolean doCredentialsMatch(AuthenticationToken authenticationToken, AuthenticationInfo authenticationInfo) {
 
-        String token = authenticationToken.getCredentials().toString();
-        String username = authenticationToken.getPrincipal().toString();
+       // String token = authenticationToken.getCredentials().toString();
+       // String username = authenticationToken.getPrincipal().toString();
         try {
-            Algorithm algorithm = Algorithm.HMAC256(JwtUtils.SECRET_KEY);
-            JWTVerifier verifier = JWT.require(algorithm).withClaim("username", username).build();
-            verifier.verify(token);
+           // Algorithm algorithm = Algorithm.HMAC256(JwtUtils.SECRET_KEY);
+           // JWTVerifier verifier = JWT.require(algorithm).withClaim("username", username).build();
+           // verifier.verify(token);
             return true;
         } catch (JWTVerificationException e) {
             logger.error(e.getMessage());

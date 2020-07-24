@@ -1,4 +1,5 @@
 package com.q7w.examination.config;
+import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.Service.UserService;
 import com.q7w.examination.entity.User;
 import org.apache.shiro.SecurityUtils;
@@ -31,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class JwtRealm extends AuthorizingRealm {
     @Autowired
     UserService userService;
+    @Autowired
+    RedisService redisService;
     /**
      * 限定这个 Realm 只处理我们自定义的 JwtToken
      */
@@ -51,15 +54,17 @@ public class JwtRealm extends AuthorizingRealm {
         }
         // 从 JwtToken 中获取当前用户
         String username = jwtToken.getPrincipal().toString();
+        String tk = "tk-"+username;
         // 查询数据库获取用户信息，此处使用 Map 来模拟数据库
-        User user = userService.findByUsername(username);
+    //    User user = userService.findByUsername(username);
+        String user = redisService.get(tk).toString();
         // 用户不存在
         if (user == null) {
             throw new UnknownAccountException("用户不存在！");
         }
-        // 用户被锁定
-        if (!user.isEnabled()) {
-            throw new LockedAccountException("该用户已被锁定,暂时无法登录！");
+
+        if(!user.equals(jwtToken.getCredentials().toString())){
+            throw new AccountException("JWT token不存在！");
         }
 
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, username, getName());
