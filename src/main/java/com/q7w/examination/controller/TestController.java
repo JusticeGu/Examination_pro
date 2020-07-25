@@ -22,10 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 /**
  * @author xiaogu
  * @date 2020/7/15 19:29
@@ -113,6 +111,19 @@ public class TestController implements Serializable {
         return new ResponseData(ExceptionMsg.SUCCESS,content);
     }
 
-
+    @PostMapping(value = "/zset")
+    @CrossOrigin
+    @ApiOperation("zset测试1")
+    public ResponseData testzset(String key,String value) {
+        redisService.sortSetZincrby(key,value,1 );
+        return new ResponseData(ExceptionMsg.SUCCESS,"success");
+    }
+    @PostMapping(value = "/zsetget")
+    @CrossOrigin
+    @ApiOperation("zset测试2")
+    public ResponseData zsetget(String key,String value) {
+        Set zset = redisService.sortSetRange(key,0,-1);
+        return new ResponseData(ExceptionMsg.SUCCESS,zset);
+    }
 
 }

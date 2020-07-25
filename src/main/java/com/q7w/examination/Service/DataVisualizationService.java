@@ -2,6 +2,7 @@ package com.q7w.examination.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author JunXxxxi
@@ -15,4 +16,6 @@ public interface DataVisualizationService {
     public Map<Integer,Integer> getWrongSituation(int kid);
     public Map<Integer,Double> getRiaghtRate(int kid);
     public Map getStudentsList(int kid);
+    public boolean addwronglist(int qid);//添加错题
+    public Set wrongtop(int range);
 }

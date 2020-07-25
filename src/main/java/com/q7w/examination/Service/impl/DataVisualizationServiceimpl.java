@@ -2,6 +2,7 @@ package com.q7w.examination.Service.impl;
 
 
 import com.q7w.examination.Service.DataVisualizationService;
+import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.dao.ExamdataDAO;
 import com.q7w.examination.dao.ExroomDAO;
 import com.q7w.examination.dao.PaperDAO;
@@ -27,6 +28,8 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     PaperDAO paperDAO;
     @Autowired
     UserDAO userDAO;
+    @Autowired
+    RedisService redisService;
 
     @Override
     public List<Integer> getNumOfExam() {
@@ -122,5 +125,20 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
             studentsList.put("totalscore",scoreList.get(i));
         }
         return studentsList;
+    }
+
+    @Override
+    public boolean addwronglist(int qid) {
+        try{
+            double score = redisService.sortSetZincrby("wronglisttop",Integer.toString(qid),1 );
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    @Override
+    public Set wrongtop(int range) {
+        return redisService.sortSetRange("wronglisttop",0,range-1);
     }
 }

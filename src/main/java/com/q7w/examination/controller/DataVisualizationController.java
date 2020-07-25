@@ -5,6 +5,8 @@ import com.q7w.examination.Service.DataVisualizationService;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +49,14 @@ public class DataVisualizationController {
     public ResponseData getWrongSituation(@RequestParam int kid){
         return new ResponseData(ExceptionMsg.SUCCESS, dataVisualizationService.getWrongSituation(kid));
     }
-
+    @GetMapping("/wrongtop")
+    @ApiOperation("当日错题统计")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "排行榜范围", value = "range", defaultValue = "10", required = true)
+    })
+    public ResponseData getwrongtop(@RequestParam int range){
+        return new ResponseData(ExceptionMsg.SUCCESS, dataVisualizationService.wrongtop(range));
+    }
     @GetMapping("/riaghtRate")
     @ApiOperation("老师端题目正确率统计")
     public ResponseData getRiaghtRate(@RequestParam int kid){

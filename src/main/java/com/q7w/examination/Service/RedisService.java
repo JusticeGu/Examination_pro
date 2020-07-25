@@ -9,7 +9,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
+import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
@@ -290,6 +290,18 @@ public final class RedisService {
             e.printStackTrace();
             return null;
         }
+    }
+    /**
+     * 获取集合元素, 并且把score值也获取
+     *
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    public Set<TypedTuple<Object>> zRangeWithScores(String key, long start,
+                                                    long end) {
+        return redisTemplate.opsForZSet().rangeWithScores(key, start, end);
     }
 
 }

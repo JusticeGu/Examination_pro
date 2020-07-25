@@ -48,6 +48,7 @@ public class ScoreUtil {
                 } else {
                     // 选择错误，加入错题集
                     wrongIds.add(String.valueOf(q.getQid()));
+                    
                 }
             }
         }

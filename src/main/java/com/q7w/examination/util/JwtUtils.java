@@ -24,7 +24,7 @@ public class JwtUtils {
     // 私密
     public static final String SECRET_KEY = "10$rw4dacU3dqeT.XAs0Hq";
     // 过期时间1h
-    private static final long EXPIRE_TIME = 1 * 120 * 1000;
+    private static final long EXPIRE_TIME = 1000*60*2;
 
 
     /**
@@ -49,12 +49,31 @@ public class JwtUtils {
             Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
             Algorithm algorithm = Algorithm.HMAC256(secret);
             // 附带username，nickname信息
-            return JWT.create().withClaim("username", username).withExpiresAt(date).sign(algorithm);
+            return JWT.create().withClaim("username", username)
+                                .withExpiresAt(date)
+                                .withIssuedAt(new Date())
+                                .sign(algorithm);
         } catch (JWTCreationException e) {
             return null;
         }
     }
-
+    /**
+     * 生成签名
+     */
+    public static String sign(String username,String uno,String secret) {
+        try {
+            Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            // 附带username，nickname信息
+            return JWT.create().withClaim("username", username)
+                    .withClaim("uno", uno)
+                    .withExpiresAt(date)
+                    .withIssuedAt(new Date())
+                    .sign(algorithm);
+        } catch (JWTCreationException e) {
+            return null;
+        }
+    }
     /**
      * Get username from TOKEN
      * @return token contains username information
@@ -98,11 +117,12 @@ public class JwtUtils {
         try {
             Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            JWTCreator.Builder builer = JWT.create().withExpiresAt(date);
+          //  JWTCreator.Builder builer = JWT.create().withExpiresAt(date);
+            JWTCreator.Builder builer = JWT.create();
             for (Map.Entry<String, Claim> entry : claims.entrySet()) {
                 builer.withClaim(entry.getKey(), entry.getValue().asString());
             }
-            String newcode = builer.sign(algorithm);
+            String newcode = builer.withExpiresAt(date).sign(algorithm);
             return  newcode;
         } catch (JWTCreationException e) {
             return null;
