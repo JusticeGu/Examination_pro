@@ -107,7 +107,11 @@ public class PaperServiceimpl implements PaperService {
         Paper paper = findPaperbyid(pid);
         Map<String, Object> paperinfo = new HashMap();
         paperinfo.put("papername", paper.getName());
-        paperinfo.put("score",paper.getSinscore());
+        float sinscore = paper.getSinscore();
+        float subscore = paper.getSubscore();
+        float mulscore = paper.getMulscore();
+        float fullmark = sinscore+subscore+mulscore;
+        paperinfo.put("fullmark",fullmark);
         List<Questions> questionSet = JSONObject.parseObject(paper.getQucontent(),List.class);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("count", questionSet.size());

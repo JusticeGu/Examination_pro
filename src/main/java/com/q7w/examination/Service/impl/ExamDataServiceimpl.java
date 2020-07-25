@@ -1,15 +1,22 @@
 package com.q7w.examination.Service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.q7w.examination.Service.ExamDataService;
+import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.dao.ExamdataDAO;
 import com.q7w.examination.dao.ExroomDAO;
+import com.q7w.examination.dao.PaperDAO;
+import com.q7w.examination.dto.QuestionsDTO;
+import com.q7w.examination.dto.ResultDTO;
 import com.q7w.examination.entity.Examdata;
+import com.q7w.examination.entity.Paper;
+import com.q7w.examination.entity.Questions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author xiaogu
@@ -19,6 +26,10 @@ import java.util.Map;
 public class ExamDataServiceimpl implements ExamDataService {
     @Autowired
     ExamdataDAO examdataDAO;
+    @Autowired
+    RedisService redisService;
+    @Autowired
+    PaperDAO paperDAO;
     @Override
     public int addexamdata(int kid,int pid,String uno,int ltimes) {
         Examdata examdata = getexam(kid, pid, uno);
@@ -96,5 +107,45 @@ public class ExamDataServiceimpl implements ExamDataService {
     @Override
     public List<Examdata>  querydatabykid(int kid) {
         return examdataDAO.findAllByKid(kid);
+    }
+
+    @Override
+    public Map getExamResult(int kid, String uno) {
+        int pid = examdataDAO.getPid(kid);
+        Paper paper = findPaperbyid(pid);
+        Map<String, Object> paperinfo = new HashMap();
+        paperinfo.put("papername", paper.getName());
+        float sinscore = paper.getSinscore();
+        float subscore = paper.getSubscore();
+        float mulscore = paper.getMulscore();
+        float fullmark = sinscore+subscore+mulscore;
+        paperinfo.put("fullmark",fullmark);
+        paperinfo.put("yourscore",examdataDAO.findtotalscoreByKidAndUno(kid, uno));
+        List<Questions> questionSet = JSONObject.parseObject(paper.getQucontent(),List.class);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("count", questionSet.size());
+        map.put("questionList", questionSet);
+        String json = JSON.toJSONString(map, true);
+        List<Questions> questionList = JSON.parseArray(JSON.parseObject(json).getString("questionList"),Questions.class);
+        List<ResultDTO> resultDTOS =questionList.stream().map(questions ->(ResultDTO) new ResultDTO().convertFrom(questions)).collect(Collectors.toList());
+        paperinfo.put("questions",resultDTOS);
+        redisService.hmset("psh-"+pid,paperinfo,3600);
+        // long time = redisService.getExpire("exroom-"+kid)
+        paperinfo.put("youranswer",examdataDAO.findAnswerByKidAndUno(kid, uno));
+        return paperinfo;
+    }
+
+    public Paper findPaperbyid(int pid) {
+        Object paperdb = redisService.get("ppif-"+pid);
+        if (paperdb==null){
+            Paper paperdbdao = paperDAO.findByPid(pid);
+            String json = JSON.toJSONString(paperdbdao, true);
+            redisService.set("ppif-"+pid,json,3600);
+            return paperdbdao;
+        } else {
+            Paper paper = JSONObject.parseObject(paperdb.toString(),Paper.class);
+            return paper;
+        }
+
     }
 }

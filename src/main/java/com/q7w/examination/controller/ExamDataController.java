@@ -40,4 +40,14 @@ public class ExamDataController {
         //逻辑
         return new ResponseData(ExceptionMsg.SUCCESS,examDataService.querydatabyuno(uno));
     }
+
+    @GetMapping("/examresult")
+    @ApiOperation("个人该场考试结果详情，题目答案解析等")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "考场id", value = "kid", defaultValue = "1", required = true),
+            @ApiImplicitParam(name = "学号", value = "uno", defaultValue = "0121710", required = true)
+    })
+    public ResponseData getExamResult(int kid, String uno){
+        return new ResponseData(ExceptionMsg.SUCCESS,examDataService.getExamResult(kid, uno));
+    }
 }

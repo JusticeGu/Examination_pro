@@ -17,4 +17,5 @@ public interface ExamDataService {
     public int modifydata(Examdata examdata);
     public List<Examdata> querydatabyuno(String uno);
     public List<Examdata>  querydatabykid(int kid);
+    public Map getExamResult(int kid, String uno);
 }
