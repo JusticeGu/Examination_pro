@@ -12,10 +12,12 @@ import com.q7w.examination.entity.Paper;
 import com.q7w.examination.entity.Questions;
 import com.q7w.examination.util.ScoreUtil;
 import com.q7w.examination.util.TokenUtil;
+import com.q7w.examination.util.UpdateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -135,7 +137,20 @@ public class PaperServiceimpl implements PaperService {
 
     @Override
     public int modifyPaper(Paper paper) {
-        return 0;
+        Date now= new Date();
+        Long updateTime = now.getTime();
+        paper.setUpdateTime(updateTime);
+        int pid = paper.getPid();
+        Paper oldPaper = paperDAO.findByPid(pid);
+        if(!StringUtils.isEmpty(oldPaper)){
+            UpdateUtil.copyNullProperties(paper,oldPaper);
+        }
+        try{
+            paperDAO.save(paper);
+            return 1;
+        }catch (IllegalArgumentException e) {
+            return 2;
+        }
     }
 
     @Override

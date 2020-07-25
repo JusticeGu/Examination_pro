@@ -120,7 +120,7 @@ public class ExamDataServiceimpl implements ExamDataService {
         float mulscore = paper.getMulscore();
         float fullmark = sinscore+subscore+mulscore;
         paperinfo.put("fullmark",fullmark);
-        paperinfo.put("yourscore",examdataDAO.findtotalscoreByKidAndUno(kid, uno));
+        paperinfo.put("yourscore",examdataDAO.findTotalscoreByKidAndUno(kid, uno));
         List<Questions> questionSet = JSONObject.parseObject(paper.getQucontent(),List.class);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("count", questionSet.size());

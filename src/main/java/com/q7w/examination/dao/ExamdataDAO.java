@@ -14,7 +14,11 @@ public interface ExamdataDAO extends JpaRepository<Examdata,Integer> {
     List<Examdata> findAllByUno(String uno);
     List<Examdata> findAllByKid(int kid);
     @Query(nativeQuery =true,value = "select totalscore from examdata where kid = ?1 and uno = ?2")
-    float findtotalscoreByKidAndUno(int kid, String uno);
+    float findTotalscoreByKidAndUno(int kid, String uno);
+    @Query(nativeQuery =true,value = "select totalscore from examdata where kid = ?1")
+    List<Float> findTotalscoreByKid(int kid);
+    @Query(nativeQuery =true,value = "select uno from examdata where kid = ?1")
+    List<String> findUnoByKid(int kid);
     @Query(nativeQuery =true,value = "select anslist from examdata where kid = ?1 and uno = ?2")
     String findAnswerByKidAndUno(int kid, String uno);
     int countAllByKid(int kid);

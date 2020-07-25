@@ -14,4 +14,5 @@ public interface DataVisualizationService {
     public List<Integer> getDisOfScore(int kid);
     public Map<Integer,Integer> getWrongSituation(int kid);
     public Map<Integer,Double> getRiaghtRate(int kid);
+    public Map getStudentsList(int kid);
 }

@@ -54,5 +54,11 @@ public class DataVisualizationController {
         return new ResponseData(ExceptionMsg.SUCCESS, dataVisualizationService.getRiaghtRate(kid));
     }
 
+    @GetMapping("/studentsList")
+    @ApiOperation("单次考试所有参加的学生列表（包括姓名、学号、成绩）")
+    public ResponseData getStudentsList(@RequestParam int kid){
+        return new ResponseData(ExceptionMsg.SUCCESS, dataVisualizationService.getStudentsList(kid));
+    }
+
 
 }

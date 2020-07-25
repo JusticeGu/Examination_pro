@@ -5,6 +5,8 @@ import com.q7w.examination.Service.DataVisualizationService;
 import com.q7w.examination.dao.ExamdataDAO;
 import com.q7w.examination.dao.ExroomDAO;
 import com.q7w.examination.dao.PaperDAO;
+import com.q7w.examination.dao.UserDAO;
+import com.q7w.examination.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     ExamdataDAO examedataDAO;
     @Autowired
     PaperDAO paperDAO;
+    @Autowired
+    UserDAO userDAO;
 
     @Override
     public List<Integer> getNumOfExam() {
@@ -103,5 +107,20 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
             map.put(i,mm);
         }
         return map;
+    }
+
+    @Override
+    public Map getStudentsList(int kid) {
+        Map<String, Object> studentsList = new HashMap();
+        List<Float> scoreList;
+        scoreList = examedataDAO.findTotalscoreByKid(kid);
+        List<String> unoList;
+        unoList = examedataDAO.findUnoByKid(kid);
+        for(int i=0;i<scoreList.size();i++){
+            studentsList.put("name",userDAO.findNameByUno(unoList.get(i)));
+            studentsList.put("uno",unoList.get(i));
+            studentsList.put("totalscore",scoreList.get(i));
+        }
+        return studentsList;
     }
 }
