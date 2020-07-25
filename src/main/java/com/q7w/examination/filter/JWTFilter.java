@@ -141,7 +141,9 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             newToken = JwtUtils.refreshTokenExpired(token.getCredentials().toString(), JwtUtils.SECRET_KEY);
         }
         if (newToken != null)
+            httpResponse.setHeader("Access-Control-Expose-Headers",JwtUtils.AUTH_HEADER);
             httpResponse.setHeader(JwtUtils.AUTH_HEADER, newToken);
+
         return true;
     }
 

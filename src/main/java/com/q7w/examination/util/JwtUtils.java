@@ -20,11 +20,11 @@ public class JwtUtils {
 
     // 请求头
     //public static final String AUTH_HEADER = "Q7WSecurity";
-    public static final String AUTH_HEADER = "Hippotoken";
+    public static final String AUTH_HEADER = "hippotoken";
     // 私密
     public static final String SECRET_KEY = "10$rw4dacU3dqeT.XAs0Hq";
     // 过期时间1h
-    private static final long EXPIRE_TIME = 1 * 60 * 1000;
+    private static final long EXPIRE_TIME = 1 * 120 * 1000;
 
 
     /**
@@ -40,11 +40,6 @@ public class JwtUtils {
             return false;
         }
     }
-
-
-
-
-
 
     /**
      * 生成签名
@@ -102,12 +97,13 @@ public class JwtUtils {
         Map<String, Claim> claims = jwt.getClaims();
         try {
             Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
-            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
             JWTCreator.Builder builer = JWT.create().withExpiresAt(date);
             for (Map.Entry<String, Claim> entry : claims.entrySet()) {
                 builer.withClaim(entry.getKey(), entry.getValue().asString());
             }
-            return builer.sign(algorithm);
+            String newcode = builer.sign(algorithm);
+            return  newcode;
         } catch (JWTCreationException e) {
             return null;
         }

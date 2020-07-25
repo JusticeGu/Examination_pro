@@ -6,9 +6,6 @@ import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.Service.UserService;
-import com.q7w.examination.dao.PaperDAO;
-import com.q7w.examination.entity.Answer;
-import com.q7w.examination.entity.Mail;
 import com.q7w.examination.entity.Questions;
 import com.q7w.examination.rabbit.SenderA;
 import com.q7w.examination.result.ExceptionMsg;
@@ -62,10 +59,10 @@ public class TestController implements Serializable {
     @RequestMapping(value="/test/token",method = RequestMethod.GET)
     @CrossOrigin
     public ResponseData checktoken(String token,String username){
-        boolean ans = JwtUtils.verify(token,username,"s");
+        boolean ans = JwtUtils.verify(token,username,JwtUtils.SECRET_KEY);
         String getusername = JwtUtils.getUsername(token);
-        boolean timetoend = JwtUtils.isTokenExpired(token);
-        String newtoken = JwtUtils.refreshTokenExpired(token,"s");
+//        boolean timetoend = JwtUtils.isTokenExpired(token);
+        String newtoken = JwtUtils.refreshTokenExpired(token,JwtUtils.SECRET_KEY);
         return new ResponseData(ExceptionMsg.SUCCESS,newtoken);
     }
     @RequestMapping(value="/test/gethash",method = RequestMethod.GET)

@@ -1,21 +1,16 @@
 package com.q7w.examination.filter;
 
 import com.q7w.examination.Service.AdminPermissionService;
-import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.util.JWTToken;
 import com.q7w.examination.util.JwtUtils;
 import com.q7w.examination.util.SpringContextUtils;
-import com.q7w.examination.util.TokenUtil;
 import lombok.extern.log4j.Log4j2;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.PathMatchingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 
-import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;

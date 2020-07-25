@@ -1,4 +1,5 @@
 package com.q7w.examination.config;
+import cn.hutool.core.lang.Console;
 import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.Service.UserService;
 import com.q7w.examination.entity.User;
@@ -7,7 +8,6 @@ import org.apache.shiro.authc.AccountException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -18,11 +18,7 @@ import org.apache.shiro.subject.PrincipalCollection;
  * @author xiaogu
  * @date 2020/7/24 17:52
  **/
-import java.util.Set;
 import com.q7w.examination.util.JWTToken;
-import com.q7w.examination.util.JwtUtils;
-import com.q7w.examination.util.TokenUtil;
-import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -63,11 +59,12 @@ public class JwtRealm extends AuthorizingRealm {
             throw new UnknownAccountException("用户不存在！");
         }
 
-        if(!user.equals(jwtToken.getCredentials().toString())){
-            throw new AccountException("JWT token不存在！");
-        }
+ //       if(!user.equals(jwtToken.getCredentials().toString())){
+    //        throw new AccountException("JWT token不存在！");
+   //     }
 
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, username, getName());
+        Console.log(username+"JWT登录成功");
         return info;
     }
 

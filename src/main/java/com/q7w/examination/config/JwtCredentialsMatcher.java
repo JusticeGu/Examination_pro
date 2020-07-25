@@ -32,12 +32,12 @@ public class JwtCredentialsMatcher implements CredentialsMatcher {
     @Override
     public boolean doCredentialsMatch(AuthenticationToken authenticationToken, AuthenticationInfo authenticationInfo) {
 
-       // String token = authenticationToken.getCredentials().toString();
-       // String username = authenticationToken.getPrincipal().toString();
+        String token = authenticationToken.getCredentials().toString();
+        String username = authenticationToken.getPrincipal().toString();
         try {
-           // Algorithm algorithm = Algorithm.HMAC256(JwtUtils.SECRET_KEY);
-           // JWTVerifier verifier = JWT.require(algorithm).withClaim("username", username).build();
-           // verifier.verify(token);
+            Algorithm algorithm = Algorithm.HMAC256(JwtUtils.SECRET_KEY);
+            JWTVerifier verifier = JWT.require(algorithm).withClaim("username", username).build();
+            verifier.verify(token);
             return true;
         } catch (JWTVerificationException e) {
             logger.error(e.getMessage());
