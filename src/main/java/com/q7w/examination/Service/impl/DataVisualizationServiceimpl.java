@@ -32,15 +32,16 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     RedisService redisService;
 
     @Override
-    public List<Integer> getNumOfExam() {
+    public List<Integer> getNumOfExam(String name) {
         Date now= new Date();
         Long current = now.getTime();
         Long zero = current/(1000*3600*24)*(1000*3600*24) - TimeZone.getDefault().getRawOffset();
         Long t = zero;
         List<Integer> numOfExam = new ArrayList<>();
+        t = t - 6 * 24*60*60*1000;
         for (int i=0;i<7;i++){
-            t = t - i * 24*60*60*1000;
-            numOfExam.add(exroomDAO.getNumExamPerDay(t));
+            numOfExam.add(exroomDAO.getNumExamPerDay(t,name));
+            t = t + 24*60*60*1000;
         }
         return numOfExam;
     }
@@ -141,4 +142,45 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     public Set wrongtop(int range) {
         return redisService.sortSetRange("wronglisttop",0,range-1);
     }
+
+    @Override
+    public Map getDashboard(String name) {
+        Date now= new Date();
+        Long current = now.getTime();
+        Long zero = current/(1000*3600*24)*(1000*3600*24) - TimeZone.getDefault().getRawOffset();
+        Long t = zero;
+        Map<String, Object> dashboard = new HashMap();
+        dashboard.put("发布考试",exroomDAO.getNumExamPerMonth(t,name));
+        dashboard.put("未开始考试",exroomDAO.getNumNotStart(t,current,name));
+        dashboard.put("已开始/已结束考试",exroomDAO.getNumExamPerMonth(t,name)-exroomDAO.getNumNotStart(t,current,name));
+        dashboard.put("添加试卷",paperDAO.getNumPaperPerMonth(t,name));
+        return dashboard;
+    }
+
+    @Override
+    public Map getSDashboard(String uno) {
+        Map<String, Object> dashboard = new HashMap();
+        dashboard.put("参加考试",examedataDAO.countByUno(uno));
+        dashboard.put("平均分",examedataDAO.sumOfScoreByUno(uno)/examedataDAO.countByUno(uno));
+        dashboard.put("最高分",examedataDAO.maxOfScoreByUno(uno));
+        dashboard.put("最低分",examedataDAO.minOfScoreByUno(uno));
+        return dashboard;
+    }
+
+    @Override
+    public List<Integer> getNumOfSExam(String uno) {
+        Date now= new Date();
+        Long current = now.getTime();
+        Long zero = current/(1000*3600*24)*(1000*3600*24) - TimeZone.getDefault().getRawOffset();
+        Long t = zero;
+        List<Integer> numOfExam = new ArrayList<>();
+        t = t - 6 * 24*60*60*1000;
+        for (int i=0;i<7;i++){
+            numOfExam.add(examedataDAO.getNumSExamPerDay(t,uno));
+            t = t + 24*60*60*1000;
+        }
+        return numOfExam;
+    }
+
+
 }

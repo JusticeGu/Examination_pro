@@ -224,4 +224,9 @@ public class QuestionsServiceimpl implements QuestionsService {
         }
         return questionlist;
     }
+
+    @Override
+    public List<Questions> getQuestionsRec() {
+        return questionsDAO.getLastTen();
+    }
 }

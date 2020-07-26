@@ -30,4 +30,6 @@ public interface ExroomService {
     public int uploadgrouplist(MultipartFile multipartFile);
     public List<Exroom> getNotStartList();
     public List<Exroom> getStartedList();
+    public List<Exroom> getLastThreeExam(String name);
+    public List<Exroom> getSLastThreeExam();
 }

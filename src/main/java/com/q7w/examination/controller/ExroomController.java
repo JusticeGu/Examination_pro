@@ -218,5 +218,17 @@ public class ExroomController implements Serializable {
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
     }
 
+    @GetMapping("/last3exam")
+    @ApiOperation("老师端最新发布的3场考试")
+    public ResponseData getLastThreeExam(@RequestParam String name){
+        return new ResponseData(ExceptionMsg.SUCCESS, exroomService.getLastThreeExam(name));
+    }
+
+    @GetMapping("/Slast3exam")
+    @ApiOperation("学生端首页最近3场考试")
+    public ResponseData getSLastThreeExam(){
+        return new ResponseData(ExceptionMsg.SUCCESS, exroomService.getSLastThreeExam());
+    }
+
 
 }

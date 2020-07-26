@@ -101,4 +101,10 @@ public class QuestionsController {
 
     }
 
+    @GetMapping("/questionsRec")
+    @ApiOperation("首页题目推荐")
+    public  ResponseData getQuestionsRec(){
+        return new ResponseData(ExceptionMsg.SUCCESS, questionsService.getQuestionsRec());
+    }
+
 }

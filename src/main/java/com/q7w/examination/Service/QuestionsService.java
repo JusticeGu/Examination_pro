@@ -24,6 +24,7 @@ public interface QuestionsService {
     public int delquestion(int qid);
     public String findquestion();
     public List<Questions> getquestionbypid(int pid);
+    public List<Questions> getQuestionsRec();
 
 
 

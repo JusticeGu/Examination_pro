@@ -215,4 +215,14 @@ public class ExroomServiceimpl implements ExroomService {
         Long recent = now.getTime();
         return exroomDAO.findByStarttimeBefore(recent);
     }
+
+    @Override
+    public List<Exroom> getLastThreeExam(String name) {
+        return exroomDAO.getLastThree(name);
+    }
+
+    @Override
+    public List<Exroom> getSLastThreeExam() {
+        return exroomDAO.getSLastThree();
+    }
 }
