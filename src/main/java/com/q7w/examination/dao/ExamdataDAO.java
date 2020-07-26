@@ -52,6 +52,6 @@ public interface ExamdataDAO extends JpaRepository<Examdata,Integer> {
     Integer maxOfScoreByUno(String uno);
     @Query(nativeQuery =true,value = "select min(totalscore) from examdata where uno = ?1")
     Integer minOfScoreByUno(String uno);
-    @Query(nativeQuery =true,value = "select count(*) from examdata where subtime >= ?1-24*60*60*1000 and subtime < ?1 and uno = ?2")
+    @Query(nativeQuery =true,value = "select count(*) from examdata where update_time>= ?1-24*60*60*1000 and update_time < ?1 and uno = ?2")
     Integer getNumSExamPerDay(Long t, String uno);
 }
