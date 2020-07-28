@@ -20,4 +20,5 @@ public class Announcement extends BaseEntity implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int aid;
     private String content;
+    private String type;
 }
