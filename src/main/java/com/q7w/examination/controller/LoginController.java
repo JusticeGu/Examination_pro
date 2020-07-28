@@ -6,6 +6,7 @@ import com.q7w.examination.Service.UserService;
 import com.q7w.examination.dao.UserDAO;
 import com.q7w.examination.entity.OpenIdJson;
 import com.q7w.examination.entity.User;
+import com.q7w.examination.rabbit.SenderA;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
 import com.q7w.examination.util.HttpUtil;
@@ -37,6 +38,8 @@ public class LoginController implements Serializable {
     UserService userService;
     @Autowired
     private UserDAO userDAO;
+    @Autowired
+    private SenderA queueSender;
     @Resource
     private RedisService redisService;
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);

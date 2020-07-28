@@ -6,6 +6,7 @@ import com.q7w.examination.Service.AdminRoleService;
 import com.q7w.examination.Service.UserService;
 import com.q7w.examination.entity.User;
 import com.q7w.examination.dao.UserDAO;
+import com.q7w.examination.rabbit.SenderA;
 import com.q7w.examination.result.ExceptionMsg;
 import com.q7w.examination.result.ResponseData;
 import io.swagger.annotations.Api;
@@ -38,7 +39,8 @@ public class UserController implements Serializable {
     @Autowired
     UserService userService;
     @Autowired
-    EmailService emailService;
+    private SenderA queueSender;
+
     @RequestMapping(value="/sendcheckcode",method = RequestMethod.POST)
     @CrossOrigin
     @ApiOperation("邮箱验证码发送接口")
@@ -47,7 +49,7 @@ public class UserController implements Serializable {
         String now = DateUtil.now();
         if (code!=null){
             String content = "您于"+now+"申请的邮箱验证码为：【"+code+"】(5分钟有效)如非本人操作请及时修改密码!【河马在线考试运营团队】（此邮箱为系统邮箱请勿回复）";
-            emailService.sendTextEmail(content, to, "【河马在线考试】您正在进行邮箱验证");
+            queueSender.sendemail(to, "【河马在线考试】您正在进行邮箱验证",content);
             return new ResponseData(ExceptionMsg.SUCCESS,"操作成功");
         }else {
             return new ResponseData(ExceptionMsg.FAILED,"发送失败");
@@ -71,7 +73,7 @@ public class UserController implements Serializable {
             String content = "您正在进行修改密码操作，点击链接修改密码（5分钟有效） "+"http://localhost:8080/reset_pwd?url="
                     +userService.sengmailvalidurl(user.getUsername())+"&name="+user.getUsername();
 
-            emailService.sendTextEmail(content, user.getEmail(), "【河马在线考试】您正在进行重置密码");
+            queueSender.sendemail( user.getEmail(), "【河马在线考试】您正在进行重置密码",content);
             return new ResponseData(ExceptionMsg.SUCCESS,"验证成功，重置邮件已发送至您的邮箱");}
         else {
             return new ResponseData(ExceptionMsg.FAILED,"验证失败：用户名与邮箱不匹配,或重复请求");
