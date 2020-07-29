@@ -3,6 +3,7 @@ package com.q7w.examination.Service.impl;
 
 import com.q7w.examination.Service.DataVisualizationService;
 import com.q7w.examination.Service.RedisService;
+import com.q7w.examination.Service.UserService;
 import com.q7w.examination.dao.ExamdataDAO;
 import com.q7w.examination.dao.ExroomDAO;
 import com.q7w.examination.dao.PaperDAO;
@@ -30,9 +31,12 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     UserDAO userDAO;
     @Autowired
     RedisService redisService;
+    @Autowired
+    UserService userService;
 
     @Override
-    public List<Integer> getNumOfExam(String name) {
+    public List<Integer> getNumOfExam() {
+        String name = userService.getusernamebysu();
         Date now= new Date();
         Long current = now.getTime();
         Long zero = current/(1000*3600*24)*(1000*3600*24) - TimeZone.getDefault().getRawOffset();
@@ -144,7 +148,8 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     }
 
     @Override
-    public Map getDashboard(String name) {
+    public Map getDashboard() {
+        String name = userService.getusernamebysu();
         Date now= new Date();
         Long current = now.getTime();
         Long zero = current/(1000*3600*24)*(1000*3600*24) - TimeZone.getDefault().getRawOffset();
@@ -158,7 +163,9 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     }
 
     @Override
-    public Map getSDashboard(String uno) {
+    public Map getSDashboard() {
+        String name = userService.getusernamebysu();
+        String uno = userDAO.findUnoByUsername(name);
         Map<String, Object> dashboard = new HashMap();
         dashboard.put("参加考试",examedataDAO.countByUno(uno));
         dashboard.put("平均分",examedataDAO.sumOfScoreByUno(uno)/examedataDAO.countByUno(uno));
@@ -168,7 +175,9 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     }
 
     @Override
-    public List<Integer> getNumOfSExam(String uno) {
+    public List<Integer> getNumOfSExam() {
+        String name = userService.getusernamebysu();
+        String uno = userDAO.findUnoByUsername(name);
         Date now= new Date();
         Long current = now.getTime();
         Long zero = current/(1000*3600*24)*(1000*3600*24) - TimeZone.getDefault().getRawOffset();

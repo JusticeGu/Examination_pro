@@ -20,7 +20,7 @@ public interface ExroomService {
     public Exroom findExroom(int kid);
     public boolean isExist(int kid);
     public List<Map<String, Object>> getExroomList();
-    public Map enterExroom(int kid,String username);
+    public Map enterExroom(int kid);
     public List<String> stringToList(String strs);
     public int submitexam(ExamSession examSession);
     public boolean putpermission(String exid,String uno);
@@ -30,6 +30,6 @@ public interface ExroomService {
     public int uploadgrouplist(MultipartFile multipartFile);
     public List<Exroom> getNotStartList();
     public List<Exroom> getStartedList();
-    public List<Exroom> getLastThreeExam(String name);
+    public List<Exroom> getLastThreeExam();
     public List<Exroom> getSLastThreeExam();
 }

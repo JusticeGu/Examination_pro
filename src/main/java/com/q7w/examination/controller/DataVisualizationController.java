@@ -28,8 +28,8 @@ public class DataVisualizationController {
 
     @GetMapping("/numOfExam")
     @ApiOperation("老师端近7天发布考试数量情况统计")
-    public ResponseData getNumOfExam(@RequestParam String name){
-        return new ResponseData(ExceptionMsg.SUCCESS, dataVisualizationService.getNumOfExam(name));
+    public ResponseData getNumOfExam(){
+        return new ResponseData(ExceptionMsg.SUCCESS, dataVisualizationService.getNumOfExam());
     }
 
     @GetMapping("/generalDataOfTeacher")
@@ -71,20 +71,20 @@ public class DataVisualizationController {
 
     @GetMapping("/Tdashboard")
     @ApiOperation("老师端首页统计信息")
-    public ResponseData getDashboard(@RequestParam String name){
-        return new ResponseData(ExceptionMsg.SUCCESS, dataVisualizationService.getDashboard(name));
+    public ResponseData getDashboard(){
+        return new ResponseData(ExceptionMsg.SUCCESS, dataVisualizationService.getDashboard());
     }
 
     @GetMapping("/Sdashboard")
     @ApiOperation("学生端首页统计信息")
-    public ResponseData getSDashboard(@RequestParam String uno){
-        return new ResponseData(ExceptionMsg.SUCCESS, dataVisualizationService.getSDashboard(uno));
+    public ResponseData getSDashboard(){
+        return new ResponseData(ExceptionMsg.SUCCESS, dataVisualizationService.getSDashboard());
     }
 
     @GetMapping("/stuExamLast7D")
     @ApiOperation("学生端首页过去7天考试统计图数据")
-    public ResponseData getNumOfSExam(@RequestParam String uno){
-        return new ResponseData(ExceptionMsg.SUCCESS, dataVisualizationService.getNumOfSExam(uno));
+    public ResponseData getNumOfSExam(){
+        return new ResponseData(ExceptionMsg.SUCCESS, dataVisualizationService.getNumOfSExam());
     }
 
 

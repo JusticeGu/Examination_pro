@@ -50,6 +50,7 @@ public interface UserService {
     public String sendmailsecode(String mail);
     public String sengmailvalidurl(String username);
     public boolean checkmailcode(String mail,String code);
+    public String getUnoByUsername(String username);
 
 
 

@@ -42,9 +42,12 @@ public class ExroomServiceimpl implements ExroomService {
      * @return 0-考场不存在 1-成功 2-不在时间范围 3-用户不在允许范围
      */
     @Override
-    public Map enterExroom(int kid,String username) {
+    public Map enterExroom(int kid) {
         Map ansmap = new HashMap();
-       // String username = userService.getusernamebysu();
+        String username = userService.getusernamebysu();
+        if(username==null){
+            ansmap.put("code","6");return ansmap;
+        }
         Exroom exroomInDB = findExroom(kid);
         if (exroomInDB==null){  ansmap.put("code","0");return ansmap;}//考场不存在拦截
         Date now= new Date();
@@ -217,8 +220,9 @@ public class ExroomServiceimpl implements ExroomService {
     }
 
     @Override
-    public List<Exroom> getLastThreeExam(String name) {
-        return exroomDAO.getLastThree(name);
+    public List<Exroom> getLastThreeExam() {
+        String username = userService.getusernamebysu();
+        return exroomDAO.getLastThree(username);
     }
 
     @Override

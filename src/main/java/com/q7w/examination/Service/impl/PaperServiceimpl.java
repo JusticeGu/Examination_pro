@@ -195,7 +195,9 @@ public class PaperServiceimpl implements PaperService {
  //       int uid = userService.findByUsername(username).getUId();
         Map markinfo=markscore( pid,ansmap);
         System.out.println(markinfo);
-         int ans =  examDataService.updateexamdata(kid, pid, "0121111",
+        String username = userService.getusernamebysu();
+        String uno = userService.getUnoByUsername(username);
+         int ans =  examDataService.updateexamdata(kid, pid, uno,
               ansmap,(float) markinfo.get("score"),markinfo.get("wrong").toString());
         if(ans==-1){infomsg.put("code","801");return infomsg;}
         infomsg.put("code","200");

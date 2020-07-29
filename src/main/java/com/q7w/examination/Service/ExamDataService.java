@@ -15,7 +15,8 @@ public interface ExamDataService {
     public boolean delexamdata(int eid);
     public int updateexamdata(int kid, int pid, String uno, Map ans,float score,String wronglist);
     public int modifydata(Examdata examdata);
-    public List<Examdata> querydatabyuno(String uno);
+    public List<Examdata> querydatabyuno();
     public List<Examdata>  querydatabykid(int kid);
-    public Map getExamResult(int kid, String uno);
+    public Map getExamResult(int kid);
+    public Map getTExamResult(int kid, String uno);
 }

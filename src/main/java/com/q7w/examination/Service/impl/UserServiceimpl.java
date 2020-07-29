@@ -340,4 +340,9 @@ public class UserServiceimpl implements UserService {
         }
 
     }
+
+    @Override
+    public String getUnoByUsername(String username) {
+        return userDAO.findUnoByUsername(username);
+    }
 }

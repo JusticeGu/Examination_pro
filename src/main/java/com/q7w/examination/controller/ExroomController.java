@@ -81,10 +81,8 @@ public class ExroomController implements Serializable {
     @PostMapping("/enter")
     @CrossOrigin
     @ApiOperation("进入考试(场)")
-    public ResponseData enterexroom(@RequestBody Exroom exroom,HttpServletRequest request) {
-        String username= tokenUtil.getusername(request);
-        if (username==null){return new ResponseData(ExceptionMsg.FAILED,"请登陆后再进入考场"); }
-        Map status = exroomService.enterExroom(exroom.getKid(),username);
+    public ResponseData enterexroom(@RequestBody Exroom exroom) {
+        Map status = exroomService.enterExroom(exroom.getKid());
         switch (status.get("code").toString()) {
             case "0":
                 return new ResponseData(ExceptionMsg.FAILED,"考场不存在请重试");
@@ -98,6 +96,8 @@ public class ExroomController implements Serializable {
                 return new ResponseData(ExceptionMsg.FAILED,"您已参加过次考试且次数超过允许考试次数上限");
             case "5":
                 return new ResponseData(ExceptionMsg.FAILED,"为获取到您的学号信息，请先绑定学号后再参加考试");
+            case "6":
+                return new ResponseData(ExceptionMsg.FAILED,"请登陆后再进入考场");
         }
         return new ResponseData(ExceptionMsg.FAILED_F,"后端错误");
     }
@@ -220,8 +220,8 @@ public class ExroomController implements Serializable {
 
     @GetMapping("/last3exam")
     @ApiOperation("老师端最新发布的3场考试")
-    public ResponseData getLastThreeExam(@RequestParam String name){
-        return new ResponseData(ExceptionMsg.SUCCESS, exroomService.getLastThreeExam(name));
+    public ResponseData getLastThreeExam(){
+        return new ResponseData(ExceptionMsg.SUCCESS, exroomService.getLastThreeExam());
     }
 
     @GetMapping("/Slast3exam")
