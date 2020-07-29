@@ -178,7 +178,7 @@ public class ExroomController implements Serializable {
         ExcelReader reader = ExcelUtil.getReader(file);
         List<Map<String,Object>>readAll =reader.readAll();
         List<Object> unolist = new ArrayList<>();
-        for(int i=0;i<=reader.getRowCount()-1;i++){
+        for(int i=0;i<=reader.getRowCount()-2;i++){
             String uno = readAll.get(i).get("学号").toString();
             unolist.add(uno);
             exroomService.putpermission(String.valueOf(exid), uno);
