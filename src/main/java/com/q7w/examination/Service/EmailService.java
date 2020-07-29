@@ -1,5 +1,11 @@
 package com.q7w.examination.Service;
 
+import com.q7w.examination.result.ExceptionMsg;
+import com.q7w.examination.result.ResponseData;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public interface EmailService {
 
 

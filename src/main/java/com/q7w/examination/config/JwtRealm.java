@@ -1,5 +1,7 @@
 package com.q7w.examination.config;
 import cn.hutool.core.lang.Console;
+import com.alibaba.druid.support.http.StatViewServlet;
+import com.alibaba.druid.support.http.WebStatFilter;
 import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.Service.UserService;
 import com.q7w.examination.entity.User;
@@ -20,6 +22,9 @@ import org.apache.shiro.subject.PrincipalCollection;
  **/
 import com.q7w.examination.util.JWTToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.annotation.Bean;
 
 
 /**
@@ -63,7 +68,7 @@ public class JwtRealm extends AuthorizingRealm {
     //        throw new AccountException("JWT token不存在！");
    //     }
 
-        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, username, getName());
+        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(username, user, getName());
         Console.log(username+"JWT登录成功");
         return info;
     }
@@ -82,5 +87,6 @@ public class JwtRealm extends AuthorizingRealm {
     //    info.setStringPermissions(perms);
         return info;
     }
+
 
 }
