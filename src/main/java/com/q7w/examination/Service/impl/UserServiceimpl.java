@@ -287,9 +287,7 @@ public class UserServiceimpl implements UserService {
     }
     @Override
     public String getusernamebysu(){
-        Pac4jPrincipal p = SecurityUtils.getSubject().getPrincipals().oneByType(Pac4jPrincipal.class);
-        CommonProfile profile = p.getProfile();
-        String username = profile.getId();
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
         return username;
     }
 

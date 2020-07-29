@@ -83,7 +83,7 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     public Map<Integer, Integer> getWrongSituation(int kid) {
         List<Integer> dataList = new ArrayList<Integer>();
         Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-        int pid = examedataDAO.getPid(kid);
+        int pid = exroomDAO.findPidByKid(kid);
         int n = paperDAO.queryNumOfQueByPid(pid);
         int m = 0, index = 0;
         for(int i=1;i<=n;i++){
@@ -168,9 +168,24 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
         String uno = userDAO.findUnoByUsername(name);
         Map<String, Object> dashboard = new HashMap();
         dashboard.put("参加考试",examedataDAO.countByUno(uno));
-        dashboard.put("平均分",examedataDAO.sumOfScoreByUno(uno)/examedataDAO.countByUno(uno));
-        dashboard.put("最高分",examedataDAO.maxOfScoreByUno(uno));
-        dashboard.put("最低分",examedataDAO.minOfScoreByUno(uno));
+        if(examedataDAO.countByUno(uno)==0){
+            dashboard.put("平均分",0);
+        }
+        else {
+            dashboard.put("平均分", examedataDAO.sumOfScoreByUno(uno) / examedataDAO.countByUno(uno));
+        }
+        if(examedataDAO.maxOfScoreByUno(uno)==null){
+            dashboard.put("最高分",0);
+        }
+        else {
+            dashboard.put("最高分",examedataDAO.maxOfScoreByUno(uno));
+        }
+        if (examedataDAO.minOfScoreByUno(uno)==null){
+            dashboard.put("最低分",0);
+        }
+        else {
+            dashboard.put("最低分",examedataDAO.minOfScoreByUno(uno));
+        }
         return dashboard;
     }
 

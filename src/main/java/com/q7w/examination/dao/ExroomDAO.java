@@ -21,5 +21,7 @@ public interface ExroomDAO extends JpaRepository<Exroom,Integer> {
     List<Exroom> getSLastThree();
     List<Exroom> findByStarttimeBefore(long now);
     List<Exroom> findByStarttimeAfter(long now);
+    @Query(nativeQuery =true,value = "select pid from exroom where kid=?1")
+    Integer findPidByKid(int kid);
 
 }
