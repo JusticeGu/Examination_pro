@@ -2,6 +2,7 @@ package com.q7w.examination.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.q7w.examination.Service.AdminRoleService;
+import com.q7w.examination.Service.AdminUserRoleService;
 import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.Service.UserService;
 import com.q7w.examination.dao.UserDAO;
@@ -42,7 +43,7 @@ public class LoginController implements Serializable {
     @Autowired
     private SenderA queueSender;
     @Autowired
-    AdminRoleService adminRoleService;
+    AdminUserRoleService adminUserRoleService;
     @Resource
     private RedisService redisService;
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
@@ -102,7 +103,7 @@ public class LoginController implements Serializable {
             userinfo.put("username",username);
             userinfo.put("uno",user.getUno());
             userinfo.put("uid",user.getUId());
-            userinfo.put("role",adminRoleService.findById(user.getUId()));
+            userinfo.put("role",adminUserRoleService.listAllByUid(user.getUId()));
             redisService.hmset("TK:"+user.getUsername(),userinfo,600);
             return new ResponseData(ExceptionMsg.SUCCESS,userinfo);
         } catch (IncorrectCredentialsException e) {
