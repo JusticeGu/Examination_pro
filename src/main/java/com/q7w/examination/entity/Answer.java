@@ -18,13 +18,7 @@ public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ansid;
+    private int eid;
+    private int qid;
     private String answerContent;
-    private int uid;
-    private int pid;
-    private int kid;
-    private String  anslist;//客观题答案列表
-    private String subanslist;//
-    private String wronglist;
-
-
 }

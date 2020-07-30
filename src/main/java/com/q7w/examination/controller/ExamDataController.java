@@ -60,6 +60,10 @@ public class ExamDataController {
             @ApiImplicitParam(name = "学号", value = "uno", defaultValue = "0121710", required = true)
     })
     public ResponseData getTExamResult(int kid, String uno){
-        return new ResponseData(ExceptionMsg.SUCCESS,examDataService.getTExamResult(kid, uno));
+        Map data = examDataService.getTExamResult(kid, uno);
+        if(data == null){
+            return new ResponseData(ExceptionMsg.FAILED,"查询错误");
+        }
+        else return new ResponseData(ExceptionMsg.SUCCESS,data);
     }
 }

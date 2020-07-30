@@ -26,7 +26,6 @@ public class Examdata extends BaseEntity implements Serializable {
     private int pid;
     private int times;
     private String uno;
-    private String anslist;
     private String objsinuanslist;
     private String wronglist;
     private String objscore;//分数
