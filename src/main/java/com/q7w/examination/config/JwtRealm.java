@@ -55,18 +55,15 @@ public class JwtRealm extends AuthorizingRealm {
         }
         // 从 JwtToken 中获取当前用户
         String username = jwtToken.getPrincipal().toString();
-        String tk = "tk-"+username;
+        String tk = "TK:"+username;
         // 查询数据库获取用户信息，此处使用 Map 来模拟数据库
     //    User user = userService.findByUsername(username);
-        String user = redisService.get(tk).toString();
+        String user = redisService.hmget(tk).get("token").toString();
         // 用户不存在
         if (user == null) {
             throw new UnknownAccountException("用户不存在！");
         }
 
- //       if(!user.equals(jwtToken.getCredentials().toString())){
-    //        throw new AccountException("JWT token不存在！");
-   //     }
 
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(username, user, getName());
         Console.log(username+"JWT登录成功");

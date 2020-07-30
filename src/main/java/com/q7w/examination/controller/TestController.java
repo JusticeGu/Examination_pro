@@ -82,27 +82,25 @@ public class TestController implements Serializable {
         queueSender.send(map);
         return new ResponseData(ExceptionMsg.SUCCESS,"发送成功");
     }
-    @RequestMapping(value="/test/stringtest",method = RequestMethod.POST)
+    @PostMapping(value = "/testmapr")
     @CrossOrigin
-    public ResponseData stringtest(String to){
-        Questions qu1 = new Questions();
-        qu1.setQuestionName("test q");
-        qu1.setOptionA("1");
-        qu1.setOptionB("2");
-        qu1.setType(1);
-        qu1.setAnswer("C");
-        List<Questions> qlist = new ArrayList<Questions>();
-        qlist.add(qu1);
-        String mid = JSONObject.toJSONString(qlist);
-        List<Questions> qu2 = JSONObject.parseObject(mid,List.class);
-
+    @ApiOperation("前端POST请求测试")
+    public ResponseData testmapr(String token,String username,String pwd) {
         Map map = new HashMap();
-        map.put("to", qu2);
-        map.put("old", mid);
-     
-       // queueSender.send(map);
-        return new ResponseData(ExceptionMsg.SUCCESS,map);
+        map.put("token", token);
+        map.put("username",username);
+        map.put("pdw", pwd);
+        redisService.hmset(username, map, 300);
+        return new ResponseData(ExceptionMsg.SUCCESS,"yes");
     }
+    @GetMapping(value = "/testmapr")
+    @CrossOrigin
+    @ApiOperation("前端POST请求测试")
+    public ResponseData gettestmapr(String username) {
+        String token=(String) redisService.hmget(username).get("token");
+        return new ResponseData(ExceptionMsg.SUCCESS,token);
+    }
+
     @PostMapping(value = "/testreceive")
     @CrossOrigin
     @ApiOperation("前端POST请求测试")

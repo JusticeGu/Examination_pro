@@ -1,6 +1,7 @@
 package com.q7w.examination.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.q7w.examination.Service.AdminRoleService;
 import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.Service.UserService;
 import com.q7w.examination.dao.UserDAO;
@@ -40,6 +41,8 @@ public class LoginController implements Serializable {
     private UserDAO userDAO;
     @Autowired
     private SenderA queueSender;
+    @Autowired
+    AdminRoleService adminRoleService;
     @Resource
     private RedisService redisService;
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
@@ -96,9 +99,12 @@ public class LoginController implements Serializable {
             String token = JwtUtils.sign(username,JwtUtils.SECRET_KEY);
             Map<String,Object> userinfo = new Hashtable<>();
             userinfo.put("token",token);
-            userinfo.put("username",username );
-            redisService.set("tk-"+user.getUsername(),token,600);
-            return new ResponseData(ExceptionMsg.SUCCESS,token);
+            userinfo.put("username",username);
+            userinfo.put("uno",user.getUno());
+            userinfo.put("uid",user.getUId());
+            userinfo.put("role",adminRoleService.findById(user.getUId()));
+            redisService.hmset("TK:"+user.getUsername(),userinfo,600);
+            return new ResponseData(ExceptionMsg.SUCCESS,userinfo);
         } catch (IncorrectCredentialsException e) {
             return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户名或密码错误");
         } catch (UnknownAccountException e) {

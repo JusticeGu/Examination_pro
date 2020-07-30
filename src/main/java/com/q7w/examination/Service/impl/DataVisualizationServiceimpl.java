@@ -2,12 +2,14 @@ package com.q7w.examination.Service.impl;
 
 
 import com.q7w.examination.Service.DataVisualizationService;
+import com.q7w.examination.Service.QuestionsService;
 import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.Service.UserService;
 import com.q7w.examination.dao.ExamdataDAO;
 import com.q7w.examination.dao.ExroomDAO;
 import com.q7w.examination.dao.PaperDAO;
 import com.q7w.examination.dao.UserDAO;
+import com.q7w.examination.entity.Questions;
 import com.q7w.examination.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,8 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     RedisService redisService;
     @Autowired
     UserService userService;
+    @Autowired
+    QuestionsService questionsService;
 
     @Override
     public List<Integer> getNumOfExam() {
@@ -143,8 +147,18 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     }
 
     @Override
-    public Set wrongtop(int range) {
-        return redisService.sortSetRange("wronglisttop",0,range-1);
+    public List wrongtop(int range) {
+        if (redisService.get("Wrongtop")==null){
+        Set qidset=redisService.sortSetRange("wronglisttop",0,range-1);
+        List<String> questionsList = new ArrayList<>();
+        for (Object qid:qidset){
+            questionsList.add(questionsService.getquestionbyid(Integer.parseInt(qid.toString())).getQuestionName());
+        }
+        redisService.set("Wrongtop",questionsList,3600*27*7)
+        return questionsList;}
+        else {
+            return (List)redisService.get("Wrongtop");
+        }
     }
 
     @Override
@@ -165,7 +179,7 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     @Override
     public Map getSDashboard() {
         String name = userService.getusernamebysu();
-        String uno = userDAO.findUnoByUsername(name);
+        String uno = redisService.hmget("TK:"+name).get("uno").toString();
         Map<String, Object> dashboard = new HashMap();
         dashboard.put("参加考试",examedataDAO.countByUno(uno));
         if(examedataDAO.countByUno(uno)==0){
@@ -192,7 +206,7 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     @Override
     public List<Integer> getNumOfSExam() {
         String name = userService.getusernamebysu();
-        String uno = userDAO.findUnoByUsername(name);
+        String uno = redisService.hmget("TK:"+name).get("uno").toString();
         Date now= new Date();
         Long current = now.getTime();
         Long zero = current/(1000*3600*24)*(1000*3600*24) - TimeZone.getDefault().getRawOffset();

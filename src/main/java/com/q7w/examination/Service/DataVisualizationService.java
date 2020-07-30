@@ -19,7 +19,7 @@ public interface DataVisualizationService {
     public Map<Integer,Double> getRiaghtRate(int kid);
     public Map getStudentsList(int kid);
     public boolean addwronglist(int qid);//添加错题
-    public Set wrongtop(int range);
+    public List wrongtop(int range);
     public Map getDashboard();
     public Map getSDashboard();
     public List<Integer> getNumOfSExam();

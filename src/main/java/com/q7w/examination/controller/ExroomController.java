@@ -190,7 +190,7 @@ public class ExroomController implements Serializable {
     @ApiOperation("根据考场号获取该考场允许进入的考生名单")
     public ResponseData getpermissionset(String exid){
         //逻辑
-         Set<Object> list = redisService.setMembers(exid);
+         Set<Object> list = redisService.setMembers("EXPE"+exid);
         //   Set<String> set_old = new HashSet<String>();
         return new ResponseData(ExceptionMsg.SUCCESS,list);
     }
