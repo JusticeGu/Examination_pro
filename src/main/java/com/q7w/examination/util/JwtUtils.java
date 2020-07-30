@@ -24,7 +24,7 @@ public class JwtUtils {
     // 私密
     public static final String SECRET_KEY = "10$rw4dacU3dqeT.XAs0Hq";
     // 过期时间1h
-    private static final long EXPIRE_TIME = 1000*60*5;
+    private static final long EXPIRE_TIME = 1000*60*30;
 
 
     /**

@@ -104,7 +104,7 @@ public class LoginController implements Serializable {
             userinfo.put("uno",user.getUno());
             userinfo.put("uid",user.getUId());
             userinfo.put("role",adminUserRoleService.listAllByUid(user.getUId()));
-            redisService.hmset("TK:"+user.getUsername(),userinfo,600);
+            redisService.hmset("TK:"+user.getUsername(),userinfo,1800);
             return new ResponseData(ExceptionMsg.SUCCESS,userinfo);
         } catch (IncorrectCredentialsException e) {
             return new ResponseData(ExceptionMsg.Login_FAILED_1,"用户名或密码错误");
