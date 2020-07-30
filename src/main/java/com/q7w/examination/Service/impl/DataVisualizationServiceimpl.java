@@ -128,11 +128,13 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
         scoreList = examedataDAO.findTotalscoreByKid(kid);
         List<String> unoList;
         unoList = examedataDAO.findUnoByKid(kid);
+        List<String> nameList = new ArrayList<>();
         for(int i=0;i<scoreList.size();i++){
-            studentsList.put("name",userDAO.findNameByUno(unoList.get(i)));
-            studentsList.put("uno",unoList.get(i));
-            studentsList.put("totalscore",scoreList.get(i));
+            nameList.add(userDAO.findNameByUno(unoList.get(i)));
         }
+        studentsList.put("name",nameList);
+        studentsList.put("uno",unoList);
+        studentsList.put("totalscore",scoreList);
         return studentsList;
     }
 
