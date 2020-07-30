@@ -19,8 +19,6 @@ public interface ExamdataDAO extends JpaRepository<Examdata,Integer> {
     List<Float> findTotalscoreByKid(int kid);
     @Query(nativeQuery =true,value = "select uno from examdata where kid = ?1")
     List<String> findUnoByKid(int kid);
-    @Query(nativeQuery =true,value = "select anslist from examdata where kid = ?1 and uno = ?2")
-    String findAnswerByKidAndUno(int kid, String uno);
     int countAllByKid(int kid);
     Examdata findByKidAndPidAndUno(int kid,int pid,String uno);
     @Query(nativeQuery =true,value = "select count(*) from examdata where kid = ?1")
@@ -54,4 +52,5 @@ public interface ExamdataDAO extends JpaRepository<Examdata,Integer> {
     Integer minOfScoreByUno(String uno);
     @Query(nativeQuery =true,value = "select count(*) from examdata where update_time>= ?1-24*60*60*1000 and update_time < ?1 and uno = ?2")
     Integer getNumSExamPerDay(Long t, String uno);
+    Examdata findByKidAndUno(int kid, String uno);
 }

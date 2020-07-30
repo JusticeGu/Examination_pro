@@ -2,6 +2,7 @@ package com.q7w.examination.Service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.q7w.examination.Service.AnswerService;
 import com.q7w.examination.Service.ExamDataService;
 import com.q7w.examination.Service.RedisService;
 import com.q7w.examination.Service.UserService;
@@ -10,6 +11,7 @@ import com.q7w.examination.dao.ExroomDAO;
 import com.q7w.examination.dao.PaperDAO;
 import com.q7w.examination.dto.QuestionsDTO;
 import com.q7w.examination.dto.ResultDTO;
+import com.q7w.examination.entity.Answer;
 import com.q7w.examination.entity.Examdata;
 import com.q7w.examination.entity.Paper;
 import com.q7w.examination.entity.Questions;
@@ -33,6 +35,8 @@ public class ExamDataServiceimpl implements ExamDataService {
     PaperDAO paperDAO;
     @Autowired
     UserService userService;
+    @Autowired
+    AnswerService answerService;
     @Override
     public int addexamdata(int kid,int pid,String uno,int ltimes) {
         Examdata examdata = getexam(kid, pid, uno);
@@ -71,14 +75,34 @@ public class ExamDataServiceimpl implements ExamDataService {
 
 
     @Override
-    public int updateexamdata(int kid, int pid, String uno, Map ans, float score, String wronglist) {
+    public int updateexamdata(int kid, int pid, String uno, Map<String,String> ans, float score, String wronglist) {
         Examdata examdata = examdataDAO.findByKidAndPidAndUno(kid, pid,uno);
         if (examdata==null){return -1; }
-        examdata.setAnslist(ans.toString());
-        if (examdata.getSubscore()<=score){
-            examdata.setSubscore(score);
-            examdata.setWronglist(wronglist);
+        int eid = examdata.getEid();
+        int times = examdata.getTimes();
+        if(times==1){
+            for(Map.Entry<String, String> entry : ans.entrySet()){
+                int mapKey = Integer.parseInt(entry.getKey());
+                String mapValue = entry.getValue();
+                Answer answer = new Answer();
+                answer.setEid(eid);
+                answer.setQid(mapKey);
+                answer.setAnswerContent(mapValue);
+                answerService.saveAnswer(answer);
+            }
         }
+        else {
+            for(Map.Entry<String, String> entry : ans.entrySet()){
+                int mapKey = Integer.parseInt(entry.getKey());
+                String mapValue = entry.getValue();
+                answerService.upadteAnswer(eid,mapKey,mapValue);
+            }
+        }
+
+
+        examdata.setTotalscore(score);
+        examdata.setWronglist(wronglist);
+
         Date now= new Date();
         Long createtime = now.getTime();
         examdata.setUpdateTime(createtime);
@@ -118,7 +142,13 @@ public class ExamDataServiceimpl implements ExamDataService {
     public Map getExamResult(int kid) {
         String username = userService.getusernamebysu();
         String uno = userService.getUnoByUsername(username);
-        int pid = examdataDAO.getPid(kid);
+        Examdata examdata;
+        try{
+            examdata = examdataDAO.findByKidAndUno(kid,uno);
+        }catch (Exception e){
+            return null;
+        }
+        int pid = examdata.getPid();
         Paper paper = findPaperbyid(pid);
         Map<String, Object> paperinfo = new HashMap();
         paperinfo.put("papername", paper.getName());
@@ -127,12 +157,7 @@ public class ExamDataServiceimpl implements ExamDataService {
         float mulscore = paper.getMulscore();
         float fullmark = sinscore+subscore+mulscore;
         paperinfo.put("fullmark",fullmark);
-        float yourscore = 0;
-        try{
-            yourscore = examdataDAO.findTotalscoreByKidAndUno(kid, uno);
-        }catch (Exception e){
-            return null;
-        }
+        float yourscore = examdata.getTotalscore();
         paperinfo.put("yourscore",yourscore);
         List<Questions> questionSet = JSONObject.parseObject(paper.getQucontent(),List.class);
         Map<String, Object> map = new HashMap<String, Object>();
@@ -144,13 +169,20 @@ public class ExamDataServiceimpl implements ExamDataService {
         paperinfo.put("questions",resultDTOS);
         redisService.hmset("psh-"+pid,paperinfo,3600);
         // long time = redisService.getExpire("exroom-"+kid)
-        paperinfo.put("youranswer",examdataDAO.findAnswerByKidAndUno(kid, uno));
+        int eid = examdata.getEid();
+        paperinfo.put("youranswer",answerService.getAnswer(eid));
         return paperinfo;
     }
 
     @Override
     public Map getTExamResult(int kid, String uno) {
-        int pid = examdataDAO.getPid(kid);
+        Examdata examdata;
+        try{
+            examdata = examdataDAO.findByKidAndUno(kid,uno);
+        }catch (Exception e){
+            return null;
+        }
+        int pid = examdata.getPid();
         Paper paper = findPaperbyid(pid);
         Map<String, Object> paperinfo = new HashMap();
         paperinfo.put("papername", paper.getName());
@@ -159,7 +191,8 @@ public class ExamDataServiceimpl implements ExamDataService {
         float mulscore = paper.getMulscore();
         float fullmark = sinscore+subscore+mulscore;
         paperinfo.put("fullmark",fullmark);
-        paperinfo.put("yourscore",examdataDAO.findTotalscoreByKidAndUno(kid, uno));
+        float yourscore = examdata.getTotalscore();
+        paperinfo.put("yourscore",yourscore);
         List<Questions> questionSet = JSONObject.parseObject(paper.getQucontent(),List.class);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("count", questionSet.size());
@@ -170,7 +203,8 @@ public class ExamDataServiceimpl implements ExamDataService {
         paperinfo.put("questions",resultDTOS);
         redisService.hmset("psh-"+pid,paperinfo,3600);
         // long time = redisService.getExpire("exroom-"+kid)
-        paperinfo.put("youranswer",examdataDAO.findAnswerByKidAndUno(kid, uno));
+        int eid = examdata.getEid();
+        paperinfo.put("youranswer",answerService.getAnswer(eid));
         return paperinfo;
     }
 
