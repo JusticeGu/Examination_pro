@@ -154,7 +154,7 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
         for (Object qid:qidset){
             questionsList.add(questionsService.getquestionbyid(Integer.parseInt(qid.toString())).getQuestionName());
         }
-        redisService.set("Wrongtop",questionsList,3600*27*7)
+        redisService.set("Wrongtop",questionsList,3600*27*7);
         return questionsList;}
         else {
             return (List)redisService.get("Wrongtop");
