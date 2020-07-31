@@ -34,7 +34,7 @@ public class QuestionsController {
         return new ResponseData(ExceptionMsg.SUCCESS,questionsService.list());
     }
     @GetMapping("/typelist")
-    @ApiOperation("获取指定类型所有问题")
+    @ApiOperation("获取指定类型所有问题。")
     public ResponseData gettypeList(int type){
         return new ResponseData(ExceptionMsg.SUCCESS,questionsService.listbytype(type));
     }
