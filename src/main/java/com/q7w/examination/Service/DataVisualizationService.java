@@ -15,9 +15,9 @@ public interface DataVisualizationService {
     public List<Integer> getNumOfExam();
     public List<Integer> getNumOfStudents(int kid);
     public List<Integer> getDisOfScore(int kid);
-    public Map<Integer,Integer> getWrongSituation(int kid);
-    public Map<Integer,Double> getRiaghtRate(int kid);
-    public Map getStudentsList(int kid);
+    public Map<String, Object> getWrongSituation(int kid);
+    public Map<String,Object> getRiaghtRate(int kid);
+    public List<Map> getStudentsList(int kid);
     public boolean addwronglist(int qid);//添加错题
     public List wrongtop(int range);
     public Map getDashboard();

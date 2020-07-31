@@ -52,4 +52,9 @@ public class AnswerServiceimpl implements AnswerService {
             return 2;
         }
     }
+
+    @Override
+    public List<Integer> getQidListByEid(int eid) {
+        return answerDAO.getQidListByEid(eid);
+    }
 }

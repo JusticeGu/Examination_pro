@@ -14,4 +14,6 @@ public interface AnswerDAO extends JpaRepository<Answer,Integer> {
     List<String> getAnsByEid(int eid);
     @Query(nativeQuery =true,value = "update s_answer set answer_content= ?3 where eid = ?1 and qid = ?2")
     int updateAnswer(int eid,int qid,String anscontent);
+    @Query(nativeQuery =true,value = "select qid from s_answer where eid = ?1")
+    List<Integer> getQidListByEid(int eid);
 }

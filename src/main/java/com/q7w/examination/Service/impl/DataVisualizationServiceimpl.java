@@ -1,10 +1,7 @@
 package com.q7w.examination.Service.impl;
 
 
-import com.q7w.examination.Service.DataVisualizationService;
-import com.q7w.examination.Service.QuestionsService;
-import com.q7w.examination.Service.RedisService;
-import com.q7w.examination.Service.UserService;
+import com.q7w.examination.Service.*;
 import com.q7w.examination.dao.ExamdataDAO;
 import com.q7w.examination.dao.ExroomDAO;
 import com.q7w.examination.dao.PaperDAO;
@@ -37,6 +34,8 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     UserService userService;
     @Autowired
     QuestionsService questionsService;
+    @Autowired
+    AnswerService answerService;
 
     @Override
     public List<Integer> getNumOfExam() {
@@ -84,57 +83,67 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     }
 
     @Override
-    public Map<Integer, Integer> getWrongSituation(int kid) {
+    public Map<String, Object> getWrongSituation(int kid) {
         List<Integer> dataList = new ArrayList<Integer>();
-        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-        int pid = exroomDAO.findPidByKid(kid);
-        int n = paperDAO.queryNumOfQueByPid(pid);
-        int m = 0, index = 0;
-        for(int i=1;i<=n;i++){
-            dataList.add(examedataDAO.getNumOfWrong(kid,i));
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<Integer> numList = new ArrayList<>();
+        List<Integer> wrongQidList = new ArrayList<>();
+        int m = 0, index = 0,qid = 0;
+
+        int eid = examedataDAO.findFirstEidByKid(kid);
+        List<Integer> qidList = answerService.getQidListByEid(eid);
+        for(int i=0;i<qidList.size();i++){
+            dataList.add(examedataDAO.getNumOfWrong(kid,qidList.get(i)));
         }
+
         for(int i=0;i<4;i++){
-            for(int j=0;j<n;j++){
+            for(int j=0;j<qidList.size();j++){
                 if(dataList.get(j)>m){
                     m = dataList.get(j);
+                    qid = qidList.get(j);
                     index = j;
                 }
             }
-            map.put(index+1,m);
+            wrongQidList.add(qid);
+            numList.add(m);
             dataList.set(index, -1);
             m = -1;
         }
+        map.put("wrongqidList",wrongQidList);
+        map.put("numList",numList);
         return map;
     }
 
     @Override
-    public Map<Integer,Double> getRiaghtRate(int kid) {
-        Map<Integer, Double> map = new HashMap<Integer, Double>();
-        int pid = examedataDAO.getPid(kid);
-        int n = paperDAO.queryNumOfQueByPid(pid);
+    public Map<String,Object> getRiaghtRate(int kid) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        int eid = examedataDAO.findFirstEidByKid(kid);
+        List<Integer> qidList = answerService.getQidListByEid(eid);
+        List<Double> rightRateList = new ArrayList<>();
+
         int numOfStudents = examedataDAO.countByKid(kid);
-        for(int i=1;i<=n;i++){
-            double m = 1-examedataDAO.getNumOfWrong(kid,i)*1.0/(numOfStudents*1.0);
+        for(int i=0;i<qidList.size();i++){
+            double m = 1-examedataDAO.getNumOfWrong(kid,qidList.get(i))*1.0/(numOfStudents*1.0);
             Double mm = Double.valueOf(String.format("%.2f", m));
-            map.put(i,mm);
+            rightRateList.add(mm);
         }
+        map.put("qidList",qidList);
+        map.put("rightRateList",rightRateList);
         return map;
     }
 
     @Override
-    public Map getStudentsList(int kid) {
-        Map<String, Object> studentsList = new HashMap();
-        List<Float> scoreList;
-        scoreList = examedataDAO.findTotalscoreByKid(kid);
+    public List<Map> getStudentsList(int kid) {
+        List<Map> studentsList = new ArrayList<>();
         List<String> unoList;
         unoList = examedataDAO.findUnoByKid(kid);
-        List<String> nameList = new ArrayList<>();
-        for(int i=0;i<scoreList.size();i++){
-            nameList.add(userDAO.findNameByUno(unoList.get(i)));
+        for(int i=0;i<unoList.size();i++){
+            Map<String, Object> student = new HashMap();
+            student.put("name",userDAO.findNameByUno(unoList.get(i)));
+            student.put("uno",unoList.get(i));
+            student.put("totalscore",examedataDAO.findTotalscoreByKidAndUno(kid,unoList.get(i)));
+            studentsList.add(student);
         }
-        studentsList.put("name",nameList);
-        studentsList.put("uno",unoList);
-        studentsList.put("totalscore",scoreList);
         return studentsList;
     }
 
