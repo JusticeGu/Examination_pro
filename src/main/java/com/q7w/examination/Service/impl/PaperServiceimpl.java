@@ -121,7 +121,6 @@ public class PaperServiceimpl implements PaperService {
         String json = JSON.toJSONString(map, true);
         List<Questions> questionList = JSON.parseArray(JSON.parseObject(json).getString("questionList"),Questions.class);
         List<QuestionsDTO> questionDTOS =questionList.stream().map(questions ->(QuestionsDTO) new QuestionsDTO().convertFrom(questions)).collect(Collectors.toList());
-        Collections.shuffle(questionDTOS);
         paperinfo.put("questions",questionDTOS);
         redisService.hmset("psh-"+pid,paperinfo,3600);
        // long time = redisService.getExpire("exroom-"+kid)

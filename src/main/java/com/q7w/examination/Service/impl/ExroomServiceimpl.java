@@ -57,9 +57,9 @@ public class ExroomServiceimpl implements ExroomService {
         //String uno = userService.usernametouno(username);
         String uno = redisService.hmget("TK:"+username).get("uno").toString();
         if(uno==null){ ansmap.put("code","5");return ansmap;}//学号拦截
-        if((!checkpermission(String.valueOf(kid),uno))&&exroomInDB.getGrouptype()==1){
-            ansmap.put("code","3");
-            return ansmap;}//不在考场接受范围拦截
+//        if((!checkpermission(String.valueOf(kid),uno))&&exroomInDB.getGrouptype()==1){
+//            ansmap.put("code","3");
+//            return ansmap;}//不在考场接受范围拦截
         int ans = examDataService.addexamdata(kid,exroomInDB.getPid(),uno,exroomInDB.getAllowtimes());
         if (ans==-1||ans==2){  ansmap.put("code","4");return ansmap;}//超过考场进入上限
 

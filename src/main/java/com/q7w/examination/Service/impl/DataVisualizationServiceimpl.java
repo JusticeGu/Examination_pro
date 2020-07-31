@@ -104,7 +104,7 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
                     index = j;
                 }
             }
-            wrongQidList.add(qid);
+            wrongQidList.add(answerService.getVisualQidByQidAndEid(qid,eid));
             numList.add(m);
             dataList.set(index, -1);
             m = -1;
@@ -120,14 +120,16 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
         int eid = examedataDAO.findFirstEidByKid(kid);
         List<Integer> qidList = answerService.getQidListByEid(eid);
         List<Double> rightRateList = new ArrayList<>();
+        List<Integer> v = new ArrayList<>();
 
         int numOfStudents = examedataDAO.countByKid(kid);
         for(int i=0;i<qidList.size();i++){
             double m = 1-examedataDAO.getNumOfWrong(kid,qidList.get(i))*1.0/(numOfStudents*1.0);
             Double mm = Double.valueOf(String.format("%.2f", m));
             rightRateList.add(mm);
+            v.add(answerService.getVisualQidByQidAndEid(qidList.get(i),eid));
         }
-        map.put("qidList",qidList);
+        map.put("qidList",v);
         map.put("rightRateList",rightRateList);
         return map;
     }

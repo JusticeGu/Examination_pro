@@ -81,6 +81,7 @@ public class ExamDataServiceimpl implements ExamDataService {
         int eid = examdata.getEid();
         int times = examdata.getTimes();
         if(times==1){
+            int i=1;
             for(Map.Entry<String, String> entry : ans.entrySet()){
                 int mapKey = Integer.parseInt(entry.getKey());
                 String mapValue = entry.getValue();
@@ -88,6 +89,8 @@ public class ExamDataServiceimpl implements ExamDataService {
                 answer.setEid(eid);
                 answer.setQid(mapKey);
                 answer.setAnswerContent(mapValue);
+                answer.setVisualQid(i);
+                i++;
                 answerService.saveAnswer(answer);
             }
         }

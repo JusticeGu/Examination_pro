@@ -11,7 +11,8 @@ import java.util.Map;
  **/
 public interface AnswerService {
     public int saveAnswer(Answer answer);
-    public Map getAnswer(int eid);
+    public List<Map> getAnswer(int eid);
     public int upadteAnswer(int eid,int qid,String anscontent);
     public List<Integer> getQidListByEid(int eid);
+    public int getVisualQidByQidAndEid(int qid,int eid);
 }

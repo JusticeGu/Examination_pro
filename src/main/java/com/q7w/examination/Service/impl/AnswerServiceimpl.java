@@ -6,6 +6,7 @@ import com.q7w.examination.entity.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,15 +31,17 @@ public class AnswerServiceimpl implements AnswerService {
     }
 
     @Override
-    public Map getAnswer(int eid) {
+    public List<Map> getAnswer(int eid) {
         List<Integer> qidList;
         qidList = answerDAO.getQidByEid(eid);
         List<String> ansList;
         ansList = answerDAO.getAnsByEid(eid);
-        Map<Integer, String> answer = new HashMap();
+        List<Map> answer = new ArrayList<>();
         for(int i=0;i<qidList.size();i++){
 //            answer.put("questionID"+i,qidList.get(i));
-            answer.put(qidList.get(i),ansList.get(i));
+            Map<Integer, String> a = new HashMap();
+            a.put(qidList.get(i),ansList.get(i));
+            answer.add(a);
         }
         return answer;
     }
@@ -56,5 +59,10 @@ public class AnswerServiceimpl implements AnswerService {
     @Override
     public List<Integer> getQidListByEid(int eid) {
         return answerDAO.getQidListByEid(eid);
+    }
+
+    @Override
+    public int getVisualQidByQidAndEid(int qid, int eid) {
+        return answerDAO.getVisualQidByQidAndEid(qid,eid);
     }
 }

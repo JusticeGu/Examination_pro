@@ -21,4 +21,5 @@ public class Answer {
     private int eid;
     private int qid;
     private String answerContent;
+    private int visualQid;
 }
