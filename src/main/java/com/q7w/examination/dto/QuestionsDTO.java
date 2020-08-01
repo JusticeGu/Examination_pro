@@ -40,4 +40,6 @@ public class QuestionsDTO implements OutputConverter<QuestionsDTO,Questions> {
      * 所属课程
      */
     private int cid;
+
+    private List optionList;//问题列表后端映射
 }
