@@ -201,7 +201,7 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     public Map getSDashboard() {
 
             String name = userService.getusernamebysu();
-            String uno = redisService.hmget("TK:"+name).get("uno").toString();
+            String uno = redisService.hget("TK:"+name,"uno").toString();
             Map<String, Object> dashboard = new HashMap();
             dashboard.put("参加考试",examedataDAO.countByUno(uno));
             if(examedataDAO.countByUno(uno)==0){
@@ -228,7 +228,7 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
     @Override
     public List<Integer> getNumOfSExam() {
             String name = userService.getusernamebysu();
-            String uno = redisService.hmget("TK:"+name).get("uno").toString();
+            String uno = redisService.hget("TK:"+name,"uno").toString();
             Date now= new Date();
             Long current = now.getTime();
             Long zero = current/(1000*3600*24)*(1000*3600*24) - TimeZone.getDefault().getRawOffset();

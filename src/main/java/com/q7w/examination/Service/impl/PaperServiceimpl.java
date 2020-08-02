@@ -109,10 +109,7 @@ public class PaperServiceimpl implements PaperService {
         Paper paper = findPaperbyid(pid);
         Map<String, Object> paperinfo = new HashMap();
         paperinfo.put("papername", paper.getName());
-        float sinscore = paper.getSinscore();
-        float subscore = paper.getSubscore();
-        float mulscore = paper.getMulscore();
-        float fullmark = sinscore+subscore+mulscore;
+        float fullmark = paperDAO.getTotalScoreByPid(pid);
         paperinfo.put("fullmark",fullmark);
         List<Questions> questionSet = JSONObject.parseObject(paper.getQucontent(),List.class);
         Map<String, Object> map = new HashMap<String, Object>();
@@ -295,6 +292,11 @@ public class PaperServiceimpl implements PaperService {
         long endTime=System.nanoTime();
         System.out.println("程序运行时间： "+(endTime-startTime)+"ns");
         return markinfo;
+    }
+
+    @Override
+    public float getTotalScore(int pid) {
+        return paperDAO.getTotalScoreByPid(pid);
     }
 
     @Override
