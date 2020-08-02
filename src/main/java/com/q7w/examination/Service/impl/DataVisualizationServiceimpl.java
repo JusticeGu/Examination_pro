@@ -39,7 +39,6 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
 
     @Override
     public List<Integer> getNumOfExam() {
-        if(redisService.get("NumOfExam")==null){
             String name = userService.getusernamebysu();
             Date now= new Date();
             Long current = now.getTime();
@@ -51,17 +50,13 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
                 numOfExam.add(exroomDAO.getNumExamPerDay(t,name));
                 t = t + 24*60*60*1000;
             }
-            redisService.set("NumOfExam",numOfExam,1800);
             return numOfExam;
-        }
-        else {
-            return (List<Integer>) redisService.get("NumOfExam");
-        }
+
     }
 
     @Override
     public List<Integer> getNumOfStudents(int kid) {
-        if(redisService.get("NumOfStudents")==null){
+
             List<Integer> dataList = new ArrayList<Integer>();
             Integer a = examedataDAO.countByKid(kid);
             dataList.add(a);
@@ -76,33 +71,24 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
             dataList.add(c);
             dataList.add(examedataDAO.maxOfScore(kid));
             dataList.add(examedataDAO.minOfScore(kid));
-            redisService.set("NumOfStudents",dataList,1800);
             return dataList;
-        }
-        else {
-            return (List<Integer>) redisService.get("NumOfStudents");
-        }
+
     }
 
     @Override
     public List<Integer> getDisOfScore(int kid) {
-        if(redisService.get("DisOfScore")==null){
+
             List<Integer> dataList = new ArrayList<Integer>();
             dataList.add(examedataDAO.countExcellent(kid));
             dataList.add(examedataDAO.countGood(kid));
             dataList.add(examedataDAO.countBad(kid));
             dataList.add(examedataDAO.countPoor(kid));
-            redisService.set("DisOfScore",dataList,1800);
             return dataList;
-        }
-        else {
-            return (List<Integer>) redisService.get("DisOfScore");
-        }
+
     }
 
     @Override
     public Map<String, Object> getWrongSituation(int kid) {
-        if(redisService.get("WrongSituation")==null){
             List<Integer> dataList = new ArrayList<Integer>();
             Map<String, Object> map = new HashMap<String, Object>();
             List<Integer> numList = new ArrayList<>();
@@ -130,17 +116,13 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
             }
             map.put("wrongqidList",wrongQidList);
             map.put("numList",numList);
-            redisService.set("WrongSituation",map,1800);
             return map;
-        }
-        else {
-            return (Map<String, Object>) redisService.get("WrongSituation");
-        }
+
     }
 
     @Override
     public Map<String,Object> getRiaghtRate(int kid) {
-        if(redisService.get("RiaghtRate")==null){
+
             Map<String, Object> map = new HashMap<String, Object>();
             int eid = examedataDAO.findFirstEidByKid(kid);
             List<Integer> qidList = answerService.getQidListByEid(eid);
@@ -156,18 +138,12 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
             }
             map.put("qidList",v);
             map.put("rightRateList",rightRateList);
-            redisService.set("RiaghtRate",map,1800);
             return map;
-        }
-        else {
-            return (Map<String, Object>) redisService.get("RiaghtRate");
-        }
 
     }
 
     @Override
     public List<Map> getStudentsList(int kid) {
-        if(redisService.get("StudentsList")==null){
             List<Map> studentsList = new ArrayList<>();
             List<String> unoList;
             unoList = examedataDAO.findUnoByKid(kid);
@@ -178,12 +154,7 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
                 student.put("totalscore",examedataDAO.findTotalscoreByKidAndUno(kid,unoList.get(i)));
                 studentsList.add(student);
             }
-            redisService.set("StudentsList",studentsList,1800);
             return studentsList;
-        }
-        else {
-            return (List<Map>) redisService.get("StudentsList");
-        }
     }
 
     @Override
@@ -213,7 +184,6 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
 
     @Override
     public Map getDashboard() {
-        if(redisService.get("Dashboard")==null){
             String name = userService.getusernamebysu();
             Date now= new Date();
             Long current = now.getTime();
@@ -224,17 +194,12 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
             dashboard.put("未开始考试",exroomDAO.getNumNotStart(t,current,name));
             dashboard.put("已开始/已结束考试",exroomDAO.getNumExamPerMonth(t,name)-exroomDAO.getNumNotStart(t,current,name));
             dashboard.put("添加试卷",paperDAO.getNumPaperPerMonth(t,name));
-            redisService.set("Dashboard",dashboard,1800);
             return dashboard;
-        }
-        else {
-            return (Map) redisService.get("Dashboard");
-        }
     }
 
     @Override
     public Map getSDashboard() {
-        if(redisService.get("SDashboard")==null){
+
             String name = userService.getusernamebysu();
             String uno = redisService.hmget("TK:"+name).get("uno").toString();
             Map<String, Object> dashboard = new HashMap();
@@ -257,17 +222,11 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
             else {
                 dashboard.put("最低分",examedataDAO.minOfScoreByUno(uno));
             }
-            redisService.set("SDashboard",dashboard,1800);
             return dashboard;
-        }
-        else {
-            return (Map) redisService.get("SDashboard");
-        }
     }
 
     @Override
     public List<Integer> getNumOfSExam() {
-        if(redisService.get("NumOfSExam")==null){
             String name = userService.getusernamebysu();
             String uno = redisService.hmget("TK:"+name).get("uno").toString();
             Date now= new Date();
@@ -280,12 +239,8 @@ public class DataVisualizationServiceimpl implements DataVisualizationService {
                 numOfExam.add(examedataDAO.getNumSExamPerDay(t,uno));
                 t = t + 24*60*60*1000;
             }
-            redisService.set("NumOfSExam",numOfExam,1800);
+
             return numOfExam;
-        }
-        else {
-            return (List<Integer>) redisService.get("NumOfSExam");
-        }
     }
 
 
